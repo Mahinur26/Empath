@@ -1,0 +1,112 @@
+{
+  "labels_in_model_order": [
+    "angry",
+    "happy",
+    "neutral",
+    "surprise"
+  ],
+  "test_images": 4910,
+  "accuracy": 0.8835030549898167,
+  "recall_by_label": {
+    "angry": 0.7610993657505285,
+    "happy": 0.891215823152996,
+    "neutral": 0.8924462231115557,
+    "surprise": 0.9207232267037552
+  },
+  "confusion_matrix_true_rows_predicted_columns": [
+    [
+      360,
+      24,
+      80,
+      9
+    ],
+    [
+      60,
+      1532,
+      93,
+      34
+    ],
+    [
+      86,
+      67,
+      1784,
+      62
+    ],
+    [
+      10,
+      12,
+      35,
+      662
+    ]
+  ],
+  "flip_average_accuracy": 0.8920570264765784,
+  "flip_average_recall_by_label": {
+    "angry": 0.773784355179704,
+    "happy": 0.898196625945317,
+    "neutral": 0.9029514757378689,
+    "surprise": 0.9248956884561892
+  },
+  "flip_average_confusion_matrix": [
+    [
+      366,
+      21,
+      78,
+      8
+    ],
+    [
+      58,
+      1544,
+      84,
+      33
+    ],
+    [
+      77,
+      60,
+      1805,
+      57
+    ],
+    [
+      13,
+      13,
+      28,
+      665
+    ]
+  ],
+  "tflite_bytes": 166360,
+  "training_images": 31440,
+  "validation_images": 3491,
+  "epochs_run": 37,
+  "seed": 761,
+  "class_weighted": true,
+  "soft_labels": false,
+  "equalize": false,
+  "cutout": true,
+  "arch": "wide",
+  "augmented": true,
+  "training_data": "FER+ majority-vote train split + AffectNet faces (Hugging Face Mauregato/affectnet_short, an unofficial copy), with disgust folded into angry for training. AffectNet is licensed for non-commercial research only; this model is a hackathon prototype.",
+  "note_test": "test_images/accuracy above count FER+ disgust faces as angry; the figures below use pure-angry test labels",
+  "pure_label_tests": {
+    "ferplus_test": {
+      "flip_accuracy": 0.892,
+      "angry": 0.77,
+      "happy": 0.9,
+      "neutral": 0.9,
+      "surprise": 0.92
+    },
+    "affectnet_test": {
+      "flip_accuracy": 0.813,
+      "angry": 0.7,
+      "happy": 0.9,
+      "neutral": 0.9,
+      "surprise": 0.68
+    },
+    "affectnet_disgust_faces_read_as_angry": {
+      "x1.0": 0.74,
+      "x1.5": 0.79
+    },
+    "with_angry_x1.5": {
+      "ferplus_angry": 0.82,
+      "affectnet_angry": 0.75
+    }
+  }
+}

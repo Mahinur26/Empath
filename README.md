@@ -1,11 +1,11 @@
 # Empath on Arduino Nicla Vision
 
-Empath classifies visible facial expressions on the Nicla Vision. The recommended model, [`openmv/plus_affect_surprise`](openmv/plus_affect_surprise), outputs `angry`, `happy`, `neutral`, and `surprise`. On held-out faces it scores 87.5% on the FER+ test set and 82.4% on in-the-wild AffectNet photos. [Metrics](openmv/plus_affect_surprise/model_metrics.json)
+Empath classifies visible facial expressions on the Nicla Vision. The recommended model, [`openmv/plus_affect_surprise_dis`](openmv/plus_affect_surprise_dis), outputs `angry`, `happy`, `neutral`, and `surprise`; its `angry` also covers scrunched, disgusted faces. On held-out faces it scores 89.2% on the FER+ test set and 81.3% on in-the-wild AffectNet photos, and reads 79% of scrunched faces as angry. [Metrics](openmv/plus_affect_surprise_dis/model_metrics.json)
 
 ## Run it in OpenMV IDE
 
 1. Connect the Nicla Vision with a USB data cable. Click **Connect** in OpenMV IDE and install the latest OpenMV firmware if prompted. [Arduino's Nicla Vision setup guide](https://docs.arduino.cc/tutorials/nicla-vision/user-manual)
-2. Copy [`expression.tflite`](openmv/plus_affect_surprise/expression.tflite) and [`labels.txt`](openmv/plus_affect_surprise/labels.txt) from `openmv/plus_affect_surprise/` to the root of the drive that appears for the board. Keep the two files together. Any other model folder in `openmv/` works the same way.
+2. Copy [`expression.tflite`](openmv/plus_affect_surprise_dis/expression.tflite) and [`labels.txt`](openmv/plus_affect_surprise_dis/labels.txt) from `openmv/plus_affect_surprise_dis/` to the root of the drive that appears for the board. Keep the two files together. Any other model folder in `openmv/` works the same way.
 3. Open [`openmv/main.py`](openmv/main.py) in OpenMV IDE and click **Run**. Center one face inside the square in the camera preview. The expression and model score appear over the preview and in the serial terminal. The script shows `unsure` below a score of 45% and weights the angry score by 1.5 (`SENSITIVITY` in the script), matching the camera test page.
 4. For automatic startup, save the script as `main.py` in the root of the board's drive, eject the drive, and reset the board. For standalone display, copy [`ssd1306.py`](openmv/ssd1306.py) to the board alongside the script before ejecting. With the team's SSD1306 wired to J2 and the battery connected, turn on the glasses and center a face in the camera's view. The script updates the OLED about twice per second and also runs when the OLED is disconnected. [Team wiring and parts](Hardware/BOM.md)
 
@@ -21,7 +21,8 @@ The OLED driver is from [MicroPython Lib](https://github.com/micropython/micropy
 
 | Folder | Classes | Notes |
 |---|---|---|
-| `plus_affect_surprise` | angry, happy, neutral, surprise | Recommended. FER+ labels plus AffectNet faces, cutout augmentation |
+| `plus_affect_surprise_dis` | angry, happy, neutral, surprise | Recommended. FER+ plus AffectNet, cutout; disgust folded into angry |
+| `plus_affect_surprise` | angry, happy, neutral, surprise | Same without the disgust merge; slightly better on pure angry |
 | `plus_affect` | angry, happy, neutral, sad | Same recipe with sad; sad is hard to read live |
 | `plus_cut`, `plus_wide`, `plus_soft`, `plus_eq` | angry, happy, neutral, sad | FER+ only: cutout, plain, soft labels, histogram-equalised |
 | `mvp4`, `mvp3`, `neutral` | various | Original FER labels |
