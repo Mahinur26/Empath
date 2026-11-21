@@ -1,0 +1,83 @@
+{
+  "labels_in_model_order": [
+    "angry",
+    "happy",
+    "neutral",
+    "sad"
+  ],
+  "test_images": 5212,
+  "accuracy": 0.6933998465080583,
+  "recall_by_label": {
+    "angry": 0.639874739039666,
+    "happy": 0.8387824126268321,
+    "neutral": 0.6171938361719383,
+    "sad": 0.603047313552526
+  },
+  "confusion_matrix_true_rows_predicted_columns": [
+    [
+      613,
+      37,
+      143,
+      165
+    ],
+    [
+      104,
+      1488,
+      113,
+      69
+    ],
+    [
+      105,
+      95,
+      761,
+      272
+    ],
+    [
+      164,
+      64,
+      267,
+      752
+    ]
+  ],
+  "flip_average_accuracy": 0.7087490406753646,
+  "flip_average_recall_by_label": {
+    "angry": 0.6544885177453027,
+    "happy": 0.842728297632469,
+    "neutral": 0.6415247364152473,
+    "sad": 0.6263031275060145
+  },
+  "flip_average_confusion_matrix": [
+    [
+      627,
+      35,
+      132,
+      164
+    ],
+    [
+      101,
+      1495,
+      106,
+      72
+    ],
+    [
+      88,
+      81,
+      791,
+      273
+    ],
+    [
+      150,
+      58,
+      258,
+      781
+    ]
+  ],
+  "tflite_bytes": 166360,
+  "training_images": 18906,
+  "validation_images": 2099,
+  "epochs_run": 37,
+  "seed": 761,
+  "class_weighted": true,
+  "arch": "wide",
+  "augmented": true
+}

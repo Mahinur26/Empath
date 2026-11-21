@@ -1,0 +1,105 @@
+{
+  "labels_in_model_order": [
+    "angry",
+    "happy",
+    "neutral",
+    "sad"
+  ],
+  "test_images": 4745,
+  "accuracy": 0.8444678609062171,
+  "recall_by_label": {
+    "angry": 0.8233995584988962,
+    "happy": 0.8952879581151832,
+    "neutral": 0.8589294647323662,
+    "sad": 0.6585365853658537
+  },
+  "confusion_matrix_true_rows_predicted_columns": [
+    [
+      373,
+      13,
+      60,
+      7
+    ],
+    [
+      45,
+      1539,
+      95,
+      40
+    ],
+    [
+      61,
+      49,
+      1717,
+      172
+    ],
+    [
+      19,
+      27,
+      150,
+      378
+    ]
+  ],
+  "flip_average_accuracy": 0.8531085353003162,
+  "flip_average_recall_by_label": {
+    "angry": 0.8145695364238411,
+    "happy": 0.9022687609075044,
+    "neutral": 0.8704352176088044,
+    "sad": 0.6759581881533101
+  },
+  "flip_average_confusion_matrix": [
+    [
+      369,
+      13,
+      62,
+      9
+    ],
+    [
+      36,
+      1551,
+      89,
+      43
+    ],
+    [
+      50,
+      46,
+      1740,
+      163
+    ],
+    [
+      14,
+      25,
+      147,
+      388
+    ]
+  ],
+  "tflite_bytes": 166360,
+  "training_images": 28612,
+  "validation_images": 3176,
+  "epochs_run": 45,
+  "seed": 761,
+  "class_weighted": true,
+  "soft_labels": false,
+  "equalize": false,
+  "cutout": true,
+  "arch": "wide",
+  "augmented": true,
+  "training_data": "FER+ majority-vote train split + 13,183 AffectNet faces (Hugging Face Mauregato/affectnet_short, an unofficial copy). AffectNet is licensed for non-commercial research only; this model is a hackathon prototype.",
+  "note_test": "test_images/accuracy above are the FER+ test split; see affectnet_test for in-the-wild results",
+  "affectnet_test": {
+    "images": 3296,
+    "flip_accuracy": 0.807,
+    "flip_recall": {
+      "angry": 0.644,
+      "happy": 0.898,
+      "neutral": 0.93,
+      "sad": 0.625
+    },
+    "with_sad_angry_x2": {
+      "accuracy": 0.821,
+      "sad": 0.7,
+      "angry": 0.7,
+      "neutral": 0.9,
+      "neutral_misread_as_sad_or_angry": 0.07
+    }
+  }
+}

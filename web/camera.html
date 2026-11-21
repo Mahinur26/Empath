@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Empath Camera Test</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@300..800&display=swap">
+<style>
+/* Orbit × Material, driven by the laptop camera and a real expression model running in this page. */
+:root{--h:48;--bg:hsl(var(--h) 38% 94%);--card:hsl(var(--h) 45% 89%);--ink:hsl(var(--h) 30% 14%);--dim:hsl(var(--h) 12% 40%);--line:hsl(var(--h) 28% 82%);--acc:hsl(var(--h) 62% 38%);
+  --f:'Google Sans Flex',ui-sans-serif,system-ui,sans-serif;color-scheme:light}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--f);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh}
+button,input,select{font:inherit}
+:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+.page{max-width:1240px;margin:0 auto;padding:22px max(16px,3vw) 32px;position:relative}
+.head{display:flex;align-items:center;gap:12px 16px;flex-wrap:wrap}
+.brand{font-size:22px;font-weight:600;margin-right:auto}
+.status{font-size:13px;color:var(--dim)}
+.status b{color:var(--ink);font-weight:600}
+.zoom{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--dim)}
+.zoom input{accent-color:var(--acc);width:110px}
+.zoom.off{opacity:.4}
+.sel{font-size:13px;color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:999px;padding:6px 10px}
+.btn{background:var(--acc);color:#fff;border:0;border-radius:999px;padding:10px 18px;font-weight:600;cursor:pointer}
+.btn:hover{filter:brightness(1.1)}
+.btn2{background:transparent;color:var(--ink);border:1px solid var(--ink);border-radius:999px;padding:9px 16px;font-weight:600;cursor:pointer}
+.btn2:hover:not(:disabled){background:var(--ink);color:var(--bg)}
+.btn2:disabled{opacity:.4;cursor:default}
+.btn2.on{background:var(--ink);color:var(--bg)}
+.chip{font-size:12.5px;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:5px 11px;white-space:nowrap}
+.chip.ok{color:var(--ink);border-color:var(--ink)}
+.grid{display:grid;grid-template-columns:minmax(0,250px) minmax(0,1fr) minmax(0,290px);gap:28px;align-items:center;padding-block:18px 8px}
+.left{display:grid;gap:14px;justify-items:center}
+.lens{position:relative;width:220px;aspect-ratio:1;max-width:100%}
+.lens canvas{width:100%;height:100%;border-radius:50%;display:block;background:var(--card);box-shadow:0 0 0 8px hsl(var(--h) 50% 88%)}
+.lens .hint{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:30px;font-size:13.5px;color:var(--dim);border-radius:50%}
+.input{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--dim)}
+.input canvas{width:48px;height:48px;image-rendering:pixelated;border-radius:6px;background:var(--card)}
+.input b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+.center{aspect-ratio:1;width:100%;max-width:520px;justify-self:center;min-width:0}
+.center canvas{width:100%;height:100%;display:block}
+.right{background:var(--card);border-radius:28px;padding:24px;min-width:0}
+.word{margin:0 0 2px;font-size:clamp(42px,4.8vw,62px);font-weight:600;line-height:1;cursor:pointer}
+.word.in{animation:wIn .6s cubic-bezier(.2,.8,.2,1)}
+@keyframes wIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:none}}
+.conf{margin:0 0 14px;color:var(--dim);font-variant-numeric:tabular-nums;font-weight:500}
+.why-btn{margin:0 0 18px;background:transparent;border:1px solid var(--line);color:var(--ink);border-radius:999px;padding:6px 13px;font-size:13px;font-weight:600;cursor:pointer}
+.why-btn:hover,.why-btn[aria-expanded="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.steady{display:grid;grid-template-columns:1fr auto;gap:6px 10px;font-size:13px;margin-bottom:18px}
+.steady b{font-variant-numeric:tabular-nums}
+.steady i{grid-column:1/-1;height:8px;border-radius:8px;background:var(--line);overflow:hidden}
+.steady em{display:block;height:100%;background:var(--acc);border-radius:8px;transition:width .3s}
+.bars{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.bars li{display:grid;grid-template-columns:12px 86px minmax(0,1fr) 40px;gap:10px;align-items:center;font-size:14px;font-weight:600}
+.bars .d{width:10px;height:10px;border-radius:50%;background:var(--c)}
+.bars .t{height:8px;border-radius:8px;background:var(--line);overflow:hidden}
+.bars .t i{display:block;height:100%;background:var(--c);transform-origin:left;transform:scaleX(0)}
+.bars .v{text-align:right;color:var(--dim);font-weight:500;font-variant-numeric:tabular-nums}
+.foot{margin-top:18px;font-size:13px;color:var(--dim);max-width:84ch}
+.err{display:none;margin-top:14px;padding:12px 14px;border-radius:12px;background:hsl(8 70% 92%);color:hsl(8 60% 28%);font-size:14px}
+.err.on{display:block}
+.why{position:absolute;z-index:6;top:84px;right:max(16px,3vw);width:min(470px,calc(100% - 32px));background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px 22px;box-shadow:0 30px 60px -30px rgba(0,0,0,.45);display:grid;gap:14px;animation:whyIn .25s ease-out}
+.why[hidden]{display:none}
+@keyframes whyIn{from{opacity:0;transform:translateY(8px)}}
+.why-h{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.why-t{margin:0;font-size:24px;font-weight:600;line-height:1.15}
+.why-x{border:0;background:transparent;color:var(--dim);font-size:24px;line-height:1;padding:0 6px 4px;border-radius:8px;cursor:pointer}
+.why-x:hover{color:var(--ink);background:var(--bg)}
+.why-call{margin:0;padding:11px 13px;border-radius:12px;background:var(--bg);font-size:14px;line-height:1.5}
+.why-body{display:grid;grid-template-columns:150px minmax(0,1fr);gap:18px;align-items:start}
+.why-map{margin:0}
+.why-map canvas{width:150px;height:150px;border-radius:14px;display:block;background:var(--bg)}
+.why-map figcaption{font-size:12px;color:var(--dim);margin-top:7px;line-height:1.4}
+.why-k{margin:0 0 6px;font-size:11.5px;color:var(--dim);font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.why-cues{margin:0;padding-left:18px;display:grid;gap:6px;font-size:14.5px;line-height:1.4}
+.why-ctx{margin:0;font-size:14px;color:var(--dim);line-height:1.5}
+@media (max-width:980px){.grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.center{grid-column:1/-1;grid-row:1;max-width:440px}}
+@media (max-width:640px){.grid{grid-template-columns:minmax(0,1fr)}.why{top:auto;bottom:16px}.why-body{grid-template-columns:minmax(0,1fr)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="head">
+    <div class="brand">Empath</div>
+    <span class="status" id="status">Camera off</span>
+    <select class="sel" id="modelSel" aria-label="Model">
+      <option value="../openmv/plus_affect_surprise/">Best · angry, happy, neutral, surprised · FER+ + AffectNet</option>
+      <option value="../openmv/plus_affect/">angry, happy, neutral, sad · FER+ + AffectNet</option>
+      <option value="../openmv/plus_cut/">FER+ + cutout · reads brows and eyes, not just the mouth</option>
+      <option value="../openmv/plus_wide/">FER+ wide CNN · highest test score, mouth-heavy</option>
+      <option value="../openmv/plus_eq/">FER+ lighting-normalised · for dim or backlit rooms</option>
+      <option value="../openmv/plus_soft/">FER+ soft labels · steadier neutral, weaker sad</option>
+      <option value="../openmv/mvp4/">FER labels · wide CNN · angry, happy, neutral, sad</option>
+      <option value="../openmv/mvp3/">3 classes: happy, neutral, sad</option>
+      <option value="../openmv/neutral/">5 classes, with neutral</option>
+      <option value="../openmv/">4 classes, original</option>
+    </select>
+    <span class="chip" id="track" title="Face tracking crops tightly around your face, like the training images">Face tracking: loading…</span>
+    <label class="zoom" for="sens" title="Multiplies the angry (and sad, if the model has it) scores. Default model on held-out AffectNet faces: ×1 angry 75%, neutral misread as angry 3% · ×1.5 angry 81%, 4% · ×2 angry 84%, 6% but surprised drops to 63%">Angry/sad sensitivity <input id="sens" type="range" min="10" max="30" value="15"><b id="sensV">×1.5</b></label>
+    <label class="zoom" for="thr">Threshold <input id="thr" type="range" min="20" max="80" value="45"><b id="thrV">45%</b></label>    <label class="zoom" for="zoom">Crop <input id="zoom" type="range" min="35" max="93" value="60"></label>
+    <button class="btn2" id="cal" type="button" disabled>Teach my face</button>
+    <button class="btn" id="cam" type="button">Start camera</button>
+  </header>
+  <div class="err" id="err" role="alert"></div>
+
+  <div class="grid">
+    <section class="left">
+      <div class="lens"><canvas id="lens" width="360" height="360" aria-label="Camera crop the model reads"></canvas><div class="hint" id="hint">Start the camera, then fill this circle with your face.</div></div>
+      <div class="input"><canvas id="in48" width="48" height="48" aria-label="48 by 48 model input"></canvas><span>Model input, 48 × 48<br><b id="ms">–</b> per frame</span></div>
+    </section>
+    <section class="center"><canvas id="compass" aria-label="Prediction plotted on a pleasant–unpleasant and calm–activated plane"></canvas></section>
+    <section class="right">
+      <p class="word" id="word">—</p>
+      <p class="conf" id="conf">Waiting for camera</p>
+      <button class="why-btn" id="whyBtn" type="button" aria-expanded="false" aria-controls="why">Why this reading?</button>
+      <div class="steady"><span>Stability</span><b id="sv">–</b><i><em id="sb" style="width:0"></em></i></div>
+      <ul class="bars" id="bars"></ul>
+    </section>
+  </div>
+
+  <aside class="why" id="why" aria-label="Why this reading" hidden>
+    <header class="why-h"><h3 class="why-t" id="whyT">Why it looks happy</h3><button class="why-x" id="whyX" type="button" aria-label="Close">×</button></header>
+    <p class="why-call" id="whyCall"></p>
+    <div class="why-body">
+      <figure class="why-map"><canvas id="whyMap" width="168" height="168" aria-label="Face input with the regions that mattered most highlighted"></canvas><figcaption id="whyCap">Computing…</figcaption></figure>
+      <div><p class="why-k" id="whyK">Usually shows up as</p><ul class="why-cues" id="whyCues"></ul></div>
+    </div>
+    <p class="why-ctx" id="whyCtx"></p>
+  </aside>
+
+  <p class="foot">Runs the selected <code>expression.tflite</code> in this page with a small JavaScript interpreter that matches the official TFLite runtime exactly. Frames never leave this browser. <b>Face tracking</b> crops tightly around the face, like the FER-2013 training images; without it the page uses a fixed square you size with <b>Crop</b>. <b>Teach my face</b>: each person holds each expression for 3 seconds; the page fits a small classifier to their own examples, using the model’s internal features, and blends it 60/40 with the model. Press it again to reset for the next person.</p>
+</div>
+
+<script src="empath-model.js"></script>
+<script>
+(() => {
+'use strict';
+const $ = id => document.getElementById(id);
+const TAU = Math.PI * 2;
+let MIN_SCORE = 0.45;   // below this the reading shows "Unsure"; the firmware's MIN_SCORE should match what works here
+document.getElementById('thr').addEventListener('input', e => { MIN_SCORE = e.target.value / 100; document.getElementById('thrV').textContent = e.target.value + '%'; });
+// Everyday sad and angry are subtler than FER's mostly posed photos, so the page can weight those two scores up.
+// Trade-off measured with training/tune_sensitivity.py on held-out FER+ faces (see the slider's tooltip).
+let SENS = 1.5;
+document.getElementById('sens').addEventListener('input', e => { SENS = e.target.value / 10; document.getElementById('sensV').textContent = '×' + SENS.toFixed(1); });
+const sensitize = raw => {
+  if (SENS === 1 || !M) return raw;
+  const out = raw.map((v, i) => (M.labels[i] === 'sad' || M.labels[i] === 'angry') ? v * SENS : v), s = out.reduce((a, b) => a + b, 0);
+  return out.map(v => v / s);
+};
+// Per-label presentation. Position is on the pleasant–unpleasant (x) / calm–activated (y) plane; neutral sits at the centre.
+const META = {
+  angry: { name: 'Angry', low: 'angry', pos: [-.6, .68], hue: 8, col: '#cf5d4c', cues: ['Eyebrows lower and pull together', 'Eyes narrow or stare hard', 'Lips press together or tighten'], ctx: 'A lowered brow can also mean concentration or confusion, not only anger.' },
+  happy: { name: 'Happy', low: 'happy', pos: [.8, .3], hue: 40, col: '#d6962a', cues: ['Lip corners pull up and out', 'Cheeks lift, narrowing the eyes', 'Crinkles can form at the outer eye corners'], ctx: 'A smile that reaches the eyes is usually felt. A smile with still eyes can be politeness.' },
+  sad: { name: 'Sad', low: 'sad', pos: [-.66, -.6], hue: 214, col: '#4a7db8', cues: ['Inner ends of the eyebrows rise and pull together', 'Lip corners turn down', 'Upper eyelids may droop'], ctx: 'Sadness is often subtle. A fairly flat face with slightly lowered mouth corners can still be sad.' },
+  surprise: { name: 'Surprised', low: 'surprised', pos: [.2, .86], hue: 266, col: '#8466d2', cues: ['Eyebrows rise and arch', 'Eyes open wider', 'Jaw drops and the mouth opens'], ctx: 'Surprise is brief and can turn into delight or alarm. Check what just happened.' },
+  neutral: { name: 'Neutral', low: 'neutral', pos: [0, 0], hue: 160, col: '#6f8a82', cues: ['Eyebrows rest level', 'Mouth relaxed, corners neither up nor down', 'Eyes open normally, no squint'], ctx: 'A neutral face does not mean no feeling. Many people look neutral while listening closely.' },
+  fear: { name: 'Afraid', low: 'afraid', pos: [-.3, .82], hue: 290, col: '#8a5f9e', cues: ['Eyebrows rise and pull together', 'Upper eyelids lift', 'Lips stretch back'], ctx: 'Fear and surprise share raised brows; the stretched mouth tells them apart.' },
+  disgust: { name: 'Disgusted', low: 'disgusted', pos: [-.8, .2], hue: 90, col: '#7f8f3a', cues: ['Nose wrinkles', 'Upper lip raises', 'Cheeks lift'], ctx: 'Disgust can be brief and small, often a quick nose wrinkle.' }
+};
+const DISPLAY = ['happy', 'surprise', 'neutral', 'sad', 'angry', 'fear', 'disgust'];
+const ease = (a, t, dt, k) => { const f = 1 - Math.exp(-dt * k); for (let i = 0; i < a.length; i++) a[i] += (t[i] - a[i]) * f; };
+const withA = (hex, a) => { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; };
+const argmax = a => a.indexOf(Math.max(...a));
+
+/* ---------- state ---------- */
+let M = null;            // { model, labels, meta, n, cm, rowsum, neutral }
+let worker = null, workerBusy = false, stream = null, running = false;
+let probs = [], dp = [], stable = -1, cand = -1, run = 0, tops = [], gray = null, lastMs = 0;
+const pos = [0, 0], trail = []; let hue = 48;
+const video = document.createElement('video'); video.playsInline = true; video.muted = true;
+const big = document.createElement('canvas'); big.width = big.height = 144; const bx = big.getContext('2d');
+const small = document.createElement('canvas'); small.width = small.height = 48; const sx = small.getContext('2d', { willReadFrequently: true });
+const lens = $('lens'), lx = lens.getContext('2d'), inp = $('in48'), ix = inp.getContext('2d');
+const tgt = p => { let x = 0, y = 0; p.forEach((v, i) => { x += v * M.meta[i].pos[0]; y += v * M.meta[i].pos[1]; }); return [x, y]; };
+
+/* ---------- model loading ---------- */
+function showErr(html) { const e = $('err'); e.innerHTML = html; e.classList.add('on'); }
+async function loadModel(dir) {
+  try {
+    const [mr, lr] = await Promise.all([fetch(dir + 'expression.tflite'), fetch(dir + 'labels.txt')]);
+    if (!mr.ok || !lr.ok) throw new Error('missing');
+    const buf = await mr.arrayBuffer(), labels = (await lr.text()).split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+    let cm = null, eq = false;
+    try { const r = await fetch(dir + 'model_metrics.json'); if (r.ok) { const j = await r.json(); cm = j.confusion_matrix_true_rows_predicted_columns; eq = !!j.equalize; } } catch (e) {}
+    if (!cm) { try { const r = await fetch(dir + '../model_metrics.json'); if (r.ok) { const j = await r.json(); if (j.labels_in_model_order && j.labels_in_model_order.join() === labels.join()) cm = j.confusion_matrix_true_rows_predicted_columns; } } catch (e) {} }
+    const model = EmpathModel.load(buf), n = labels.length;
+    const meta = labels.map(l => META[l] || { name: l[0].toUpperCase() + l.slice(1), low: l, pos: [0, 0], hue: 200, col: '#888888', cues: [], ctx: '' });
+    M = { model, labels, meta, n, cm, eq, rowsum: cm ? cm.map(r => r.reduce((a, b) => a + b, 0)) : null, neutral: labels.indexOf('neutral') };
+    probs = Array(n).fill(1 / n); dp = probs.slice(); stable = -1; cand = -1; run = 0; tops = []; personal = null; teach = null; trail.length = 0; lastWord = '';
+    $('cal').classList.remove('on'); $('cal').textContent = 'Calibrate'; $('cal').disabled = !running;
+    buildBars(); $('err').classList.remove('on');
+    try { if (!worker) { worker = new Worker('occlusion-worker.js'); worker.onmessage = onWorker; } worker.postMessage({ type: 'load', buf }); workerBusy = false; } catch (e) { worker = null; }
+    $('word').textContent = '—'; $('conf').textContent = running ? 'Reading…' : 'Waiting for camera';
+    return true;
+  } catch (e) { return false; }
+}
+async function initModel() {
+  const sel = $('modelSel');
+  for (const opt of [...sel.options]) {
+    if (await loadModel(opt.value)) { sel.value = opt.value; return; }
+    opt.disabled = true;
+  }
+  {
+    showErr('Could not load a model. Open this page through the local server: run <code>py -m http.server 8000</code> in the repo folder, then visit <code>http://localhost:8000/web/camera.html</code>.');
+  }
+}
+$('modelSel').addEventListener('change', e => loadModel(e.target.value));
+
+/* ---------- bars ---------- */
+let rows = [];
+function buildBars() {
+  const ul = $('bars'); ul.innerHTML = '';
+  const order = M.labels.map((l, i) => i).sort((a, b) => (DISPLAY.indexOf(M.labels[a]) + 99) % 99 - (DISPLAY.indexOf(M.labels[b]) + 99) % 99);
+  rows = order.map(i => { const li = document.createElement('li'); li.style.setProperty('--c', M.meta[i].col); li.innerHTML = `<span class="d"></span><span>${M.meta[i].name}</span><span class="t"><i></i></span><span class="v">0%</span>`; ul.append(li); return { i, fill: li.querySelector('i'), v: li.querySelector('.v') }; });
+}
+
+/* ---------- camera ---------- */
+async function start() {
+  if (!M) { showErr('The model has not loaded yet.'); return; }
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } }, audio: false });
+    video.srcObject = stream; await video.play(); running = true; $('err').classList.remove('on');
+    $('cam').textContent = 'Stop camera'; $('hint').hidden = true; $('status').innerHTML = '<b>● Live</b> · laptop camera'; $('cal').disabled = false;
+  } catch (e) {
+    showErr(e && e.name === 'NotAllowedError' ? 'Camera access was blocked. Allow the camera from the icon in the address bar, then press Start camera.' : 'No camera could be opened. Check that no other app is using it, then try again.');
+  }
+}
+function stop() {
+  running = false; if (stream) stream.getTracks().forEach(t => t.stop()); stream = null;
+  $('cam').textContent = 'Start camera'; $('status').textContent = 'Camera off';
+  if (teach) { teach = null; showTeach(); } const c = $('cal'); c.disabled = true; if (!personal) c.textContent = 'Teach my face';
+}
+$('cam').addEventListener('click', () => running ? stop() : start());
+
+/* ---------- face tracking (MediaPipe BlazeFace from a CDN; falls back to the fixed crop) ---------- */
+let faceDet = null, box = null, lostFrames = 0;
+async function loadFaceDetector() {
+  try {
+    const V = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14';
+    const { FaceDetector, FilesetResolver } = await import(V + '/vision_bundle.mjs');
+    const files = await FilesetResolver.forVisionTasks(V + '/wasm');
+    faceDet = await FaceDetector.createFromOptions(files, {
+      baseOptions: { modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite', delegate: 'CPU' },
+      runningMode: 'VIDEO', minDetectionConfidence: .5
+    });
+    setTrack('Face tracking: on', true);
+  } catch (e) { faceDet = null; setTrack('Face tracking: unavailable, using fixed crop', false); }
+}
+function setTrack(text, ok) { const t = $('track'); t.textContent = text; t.classList.toggle('ok', ok); $('zoom').disabled = ok; $('zoom').parentElement.classList.toggle('off', ok); }
+function faceCrop(vw, vh) {
+  if (!faceDet) return null;
+  let det = null; try { det = faceDet.detectForVideo(video, performance.now()).detections[0]; } catch (e) { det = null; }
+  if (det) {
+    const b = det.boundingBox, side = Math.min(Math.max(b.width, b.height) * 1.3, vw, vh);
+    const t = { cx: b.originX + b.width / 2, cy: b.originY + b.height / 2 - b.height * .08, side };
+    box = box ? { cx: box.cx + (t.cx - box.cx) * .35, cy: box.cy + (t.cy - box.cy) * .35, side: box.side + (t.side - box.side) * .35 } : t;
+    // Eye keypoints (BlazeFace: 0 and 1 are the eyes, normalised to the frame) drive the alignment.
+    const k = det.keypoints || [];
+    if (k.length >= 2) {
+      let [p, q] = [{ x: k[0].x * vw, y: k[0].y * vh }, { x: k[1].x * vw, y: k[1].y * vh }]; if (p.x > q.x) [p, q] = [q, p];
+      const a = { mx: (p.x + q.x) / 2, my: (p.y + q.y) / 2, ang: Math.atan2(q.y - p.y, q.x - p.x), dist: Math.hypot(q.x - p.x, q.y - p.y) };
+      eyes = eyes ? { mx: eyes.mx + (a.mx - eyes.mx) * .35, my: eyes.my + (a.my - eyes.my) * .35, ang: eyes.ang + (a.ang - eyes.ang) * .35, dist: eyes.dist + (a.dist - eyes.dist) * .35 } : a;
+    }
+    lostFrames = 0;
+  } else if (++lostFrames > 15) { box = null; eyes = null; }
+  if (!box) return null;
+  const s = box.side;
+  return { side: s, x0: Math.min(Math.max(box.cx - s / 2, 0), vw - s), y0: Math.min(Math.max(box.cy - s / 2, 0), vh - s), eyes };
+}
+// Where the eyes sit in the average FER+ training face (measured from the 18,605 training images):
+// level, centred, 37.5% down from the top and 39.6% of the image width apart.
+const EYE_Y = .375, EYE_DIST = .396;
+let eyes = null;
+
+/* ---------- "Teach my face": per-person classifier on the model's own features ---------- */
+// The wearer holds each expression for 3 s. Every frame's feature vector (the layer feeding the model's final
+// classifier) is kept, and a small softmax regression is fitted to this person's examples. Readings then blend
+// the general model (40%) with the personal classifier (60%). Nothing leaves the browser.
+let personal = null, teach = null;
+const TEACH_ORDER = ['neutral', 'happy', 'sad', 'angry', 'surprise', 'fear', 'disgust'];
+const BLEND = 0.6;
+const unit = v => { let s = 0; for (let k = 0; k < v.length; k++) s += v[k] * v[k]; s = Math.sqrt(s) || 1; return Float32Array.from(v, x => x / s * 8); };
+function startTeach() {
+  const order = TEACH_ORDER.filter(l => M.labels.includes(l));
+  teach = { order, step: 0, phase: 'ready', until: performance.now() + 1500, X: [], Y: [] }; personal = null;
+  $('cal').disabled = true; $('cal').classList.remove('on'); showTeach();
+}
+function showTeach() {
+  const h = $('hint');
+  if (!teach) { h.hidden = true; return; }
+  const m = M.meta[M.labels.indexOf(teach.order[teach.step])], left = Math.max(1, Math.ceil((teach.until - performance.now()) / 1000));
+  h.hidden = false; h.style.background = 'hsl(var(--h) 45% 89% / .82)'; h.style.color = 'var(--ink)';
+  h.innerHTML = teach.phase === 'ready' ? `<span>Next: <b>${m.low}</b><br>get ready…</span>` : `<span>Hold a <b>${m.low}</b> face<br><b style="font-size:28px">${left}</b></span>`;
+  $('cal').textContent = `Teaching ${teach.step + 1}/${teach.order.length}`;
+}
+function feedTeach(feat) {
+  if (!teach) return;
+  const now = performance.now();
+  if (teach.phase === 'hold') { teach.X.push(unit(feat)); teach.Y.push(M.labels.indexOf(teach.order[teach.step])); }
+  if (now >= teach.until) {
+    if (teach.phase === 'ready') { teach.phase = 'hold'; teach.until = now + 3000; }
+    else if (++teach.step >= teach.order.length) { finishTeach(); return; }
+    else { teach.phase = 'ready'; teach.until = now + 1200; }
+  }
+  showTeach();
+}
+function finishTeach() {
+  const { X, Y } = teach; teach = null; const h = $('hint'); h.hidden = true; h.style.background = ''; h.style.color = '';
+  personal = trainSoftmax(X, Y, M.n);
+  const c = $('cal'); c.disabled = false; c.classList.add('on'); c.textContent = 'Taught · reset';
+}
+// Multinomial logistic regression by full-batch gradient descent with L2 regularisation (a few hundred samples).
+function trainSoftmax(X, Y, C, iters = 200, lr = .3, lam = 1e-3) {
+  const D = X[0].length, N = X.length, present = new Set(Y), W = Array.from({ length: C }, () => new Float32Array(D)), b = new Float32Array(C);
+  const p = new Float64Array(C);
+  for (let it = 0; it < iters; it++) {
+    const gW = Array.from({ length: C }, () => new Float32Array(D)), gb = new Float64Array(C);
+    for (let n = 0; n < N; n++) {
+      const x = X[n]; let mx = -Infinity;
+      for (let c = 0; c < C; c++) { if (!present.has(c)) { p[c] = -Infinity; continue; } let s = b[c]; const w = W[c]; for (let d = 0; d < D; d++) s += w[d] * x[d]; p[c] = s; if (s > mx) mx = s; }
+      let S = 0; for (let c = 0; c < C; c++) { p[c] = present.has(c) ? Math.exp(p[c] - mx) : 0; S += p[c]; }
+      for (let c = 0; c < C; c++) { if (!present.has(c)) continue; const g = p[c] / S - (Y[n] === c ? 1 : 0); gb[c] += g; const gw = gW[c]; for (let d = 0; d < D; d++) gw[d] += g * x[d]; }
+    }
+    for (let c = 0; c < C; c++) { if (!present.has(c)) continue; b[c] -= lr * gb[c] / N; const w = W[c], gw = gW[c]; for (let d = 0; d < D; d++) w[d] -= lr * (gw[d] / N + lam * w[d]); }
+  }
+  return { W, b, present };
+}
+function personalize(raw, feat) {
+  if (!personal) return raw;
+  const x = unit(feat), z = raw.map((_, c) => { if (!personal.present.has(c)) return -Infinity; let s = personal.b[c]; const w = personal.W[c]; for (let d = 0; d < x.length; d++) s += w[d] * x[d]; return s; });
+  const mx = Math.max(...z), e = z.map(v => v === -Infinity ? 0 : Math.exp(v - mx)), S = e.reduce((a, b) => a + b, 0);
+  const out = raw.map((v, i) => (1 - BLEND) * v + BLEND * e[i] / S), s = out.reduce((a, b) => a + b, 0);
+  return out.map(v => v / s);
+}
+$('cal').addEventListener('click', () => {
+  if (personal) { personal = null; const c = $('cal'); c.classList.remove('on'); c.textContent = 'Teach my face'; return; }
+  if (running && M && !teach) startTeach();
+});
+
+/* ---------- capture + inference ---------- */
+function grab() {
+  const vw = video.videoWidth, vh = video.videoHeight; if (!vw || !vh) return false;
+  const fc = faceCrop(vw, vh), fixed = Math.min(vw, vh) * (+$('zoom').value / 100);
+  const side = fc ? fc.side : fixed, x0 = fc ? fc.x0 : (vw - side) / 2, y0 = fc ? fc.y0 : (vh - side) / 2;
+  const al = fc && fc.eyes;
+  if (faceDet) $('track').textContent = fc ? (al ? 'Face tracking: on · aligned' : 'Face tracking: on') : 'Face tracking: no face found';
+  // Mirror for a selfie view; with eye keypoints, rotate the eyes level and scale/shift them to FER's framing.
+  const mirror = (ctx, W) => {
+    ctx.save(); ctx.fillStyle = '#7f7f7f'; ctx.fillRect(0, 0, W, W); ctx.translate(W, 0); ctx.scale(-1, 1);
+    if (al) { const s = EYE_DIST * W / al.dist; ctx.translate(W * .5, W * EYE_Y); ctx.rotate(-al.ang); ctx.scale(s, s); ctx.translate(-al.mx, -al.my); ctx.drawImage(video, 0, 0); }
+    else ctx.drawImage(video, x0, y0, side, side, 0, 0, W, W);
+    ctx.restore();
+  };
+  bx.imageSmoothingQuality = 'high'; mirror(bx, 144);
+  sx.imageSmoothingQuality = 'high'; sx.drawImage(big, 0, 0, 48, 48);
+  const d = sx.getImageData(0, 0, 48, 48).data, g = new Uint8Array(2304);
+  for (let k = 0; k < 2304; k++) g[k] = Math.round((d[k * 4] * 299 + d[k * 4 + 1] * 587 + d[k * 4 + 2] * 114) / 1000);   // same as PIL "L"
+  gray = g;
+  lx.filter = 'grayscale(1)'; mirror(lx, lens.width); lx.filter = 'none';
+  const img = ix.createImageData(48, 48); for (let k = 0; k < 2304; k++) { img.data[k * 4] = img.data[k * 4 + 1] = img.data[k * 4 + 2] = g[k]; img.data[k * 4 + 3] = 255; } ix.putImageData(img, 0, 0);
+  return true;
+}
+// Port of PIL ImageOps.equalize (the training-side algorithm); verified identical on 300 test images.
+function equalize(g) {
+  const h = new Array(256).fill(0); for (const v of g) h[v]++;
+  const histo = h.filter(x => x); if (histo.length <= 1) return Uint8Array.from(g);
+  const step = Math.floor((histo.reduce((a, b) => a + b, 0) - histo[histo.length - 1]) / 255); if (!step) return Uint8Array.from(g);
+  const lut = new Uint8Array(256); let n = Math.floor(step / 2);
+  for (let i = 0; i < 256; i++) { lut[i] = Math.min(255, Math.floor(n / step)); n += h[i]; }
+  return Uint8Array.from(g, v => lut[v]);
+}
+function infer() {
+  // Flip averaging: score the face and its mirror image, then average. Matches "flip_average_accuracy" in the metrics.
+  const t0 = performance.now(), mirrored = new Uint8Array(2304);
+  if (M.eq) {   // model trained on histogram-equalised faces: apply the identical PIL algorithm and show it in the preview
+    gray = equalize(gray);
+    const img = ix.createImageData(48, 48); for (let k = 0; k < 2304; k++) { img.data[k * 4] = img.data[k * 4 + 1] = img.data[k * 4 + 2] = gray[k]; img.data[k * 4 + 3] = 255; } ix.putImageData(img, 0, 0);
+  }
+  for (let y = 0; y < 48; y++) for (let x = 0; x < 48; x++) mirrored[y * 48 + x] = gray[y * 48 + 47 - x];
+  const fa = M.model.predictWithFeatures(gray), fb = M.model.predictWithFeatures(mirrored);
+  const raw = fa.scores.map((v, i) => (v + fb.scores[i]) / 2), feat = fa.features.map((v, i) => (v + fb.features[i]) / 2);
+  lastMs = performance.now() - t0;
+  feedTeach(feat); probs = personalize(sensitize(raw), feat);
+  const top = argmax(probs);
+  if (top === cand) run++; else { cand = top; run = 1; }
+  if (run >= 3 || stable < 0) stable = top;
+  tops.push(top); if (tops.length > 30) tops.shift();
+  trail.push(pos.slice()); if (trail.length > 25) trail.shift();
+  updateText();
+}
+
+/* ---------- reading panel ---------- */
+let lastWord = '';
+function updateText() {
+  const sure = probs[stable] >= MIN_SCORE, w = sure ? M.meta[stable].name : 'Unsure';
+  if (w !== lastWord) { lastWord = w; const el = $('word'); el.textContent = w; el.classList.remove('in'); void el.offsetWidth; el.classList.add('in'); }
+  $('conf').textContent = Math.round(probs[stable] * 100) + (personal ? '% · tuned to this face' : '% model score');
+  const st = tops.filter(t => t === stable).length / tops.length; $('sv').textContent = Math.round(st * 100) + '%'; $('sb').style.width = (st * 100).toFixed(0) + '%';
+  $('ms').textContent = lastMs.toFixed(0) + ' ms';
+  if (!$('why').hidden) updateWhy();
+}
+
+/* ---------- why card ---------- */
+function callText(p, unsure) {
+  const o = p.map((v, i) => i).sort((a, b) => p[b] - p[a]), a = o[0], b = o[1], L = M.meta;
+  const pa = Math.round(p[a] * 100), pb = Math.round(p[b] * 100), margin = p[a] - p[b];
+  let pair = '';
+  if (M.cm) {
+    const ba = M.cm[b][a] / M.rowsum[b], ab = M.cm[a][b] / M.rowsum[a];
+    const conf = ba >= ab ? `${Math.round(ba * 100)}% of ${L[b].low} test faces were read as ${L[a].low}` : `${Math.round(ab * 100)}% of ${L[a].low} test faces were read as ${L[b].low}`;
+    pair = Math.max(ab, ba) >= .1 ? ` On the held-out set, ${conf}, so this pair is easy to mix up.` : ` The model rarely mixes up these two, so the face may be changing.`;
+  }
+  if (unsure) return `<b>Below ${Math.round(MIN_SCORE * 100)}%.</b> The top guess is ${L[a].low} at ${pa}%, so the glasses say “unsure” instead of a label.${margin < .15 ? ` ${L[b].name} is close behind at ${pb}%.` + pair : ''}`;
+  if (margin < .15) return `<b>Close call.</b> ${L[a].name} ${pa}% vs ${L[b].low} ${pb}%.` + pair;
+  return `<b>Clear reading.</b> ${L[a].name} leads ${L[b].low} by ${Math.round(margin * 100)} points.`;
+}
+let lastOcc = 0;
+function updateWhy() {
+  if (!M || stable < 0) { $('whyT').textContent = 'No reading yet'; $('whyCall').textContent = 'Start the camera to see why the model chose a label.'; return; }
+  const unsure = probs[stable] < MIN_SCORE, c = M.meta[stable];
+  $('whyT').textContent = unsure ? 'Why it’s unsure' : (M.labels[stable] === 'neutral' ? 'Why it looks neutral' : `Why it looks ${c.low}`);
+  $('whyCall').innerHTML = callText(probs, unsure);
+  $('whyK').textContent = unsure ? `If it is ${c.low}, look for` : 'Usually shows up as';
+  const html = c.cues.map(q => `<li>${q}</li>`).join(''); if ($('whyCues').innerHTML !== html) $('whyCues').innerHTML = html;
+  $('whyCtx').textContent = c.ctx;
+  const now = performance.now();
+  if (gray && now - lastOcc > 900 && !workerBusy) {
+    lastOcc = now;
+    if (worker) { workerBusy = true; worker.postMessage({ type: 'occ', gray: Array.from(gray), grid: 8 }); }
+    else { const r = M.model.occlusion(gray, 8); drawMap({ ...r, drops: Array.from(r.drops), gray: Array.from(gray) }); }
+  }
+}
+function onWorker(e) { if (e.data.type === 'occ') { workerBusy = false; drawMap(e.data); } }
+const mapTmp = document.createElement('canvas'); mapTmp.width = mapTmp.height = 48; const mtx = mapTmp.getContext('2d');
+const heatTmp = document.createElement('canvas'); heatTmp.width = heatTmp.height = 8; const htx = heatTmp.getContext('2d');
+function drawMap(r) {
+  if (!M || r.top >= M.n) return;
+  const cv = $('whyMap'), x = cv.getContext('2d'), W = cv.width, n = r.grid, mx = Math.max(...r.drops);
+  const img = mtx.createImageData(48, 48); for (let k = 0; k < 2304; k++) { img.data[k * 4] = img.data[k * 4 + 1] = img.data[k * 4 + 2] = r.gray[k]; img.data[k * 4 + 3] = 255; } mtx.putImageData(img, 0, 0);
+  x.imageSmoothingEnabled = true; x.drawImage(mapTmp, 0, 0, W, W); x.fillStyle = 'rgba(0,0,0,.3)'; x.fillRect(0, 0, W, W);
+  if (heatTmp.width !== n) heatTmp.width = heatTmp.height = n;
+  const col = parseInt(M.meta[r.top].col.slice(1), 16), h = htx.createImageData(n, n);
+  for (let k = 0; k < n * n; k++) { const v = mx > 0 ? r.drops[k] / mx : 0; h.data[k * 4] = col >> 16; h.data[k * 4 + 1] = (col >> 8) & 255; h.data[k * 4 + 2] = col & 255; h.data[k * 4 + 3] = Math.round(Math.max(0, v - .1) / .9 * 215); }
+  htx.putImageData(h, 0, 0); x.drawImage(heatTmp, 0, 0, W, W);
+  $('whyCap').textContent = mx < .02 ? 'Hiding any one area barely changed the score.' : `Hiding the bright areas lowered the ${M.meta[r.top].low} score by up to ${Math.round(mx * 100)} points.`;
+}
+function toggleWhy(open = $('why').hidden) { $('why').hidden = !open; $('whyBtn').setAttribute('aria-expanded', String(open)); if (open) { lastOcc = 0; updateWhy(); } }
+$('whyBtn').addEventListener('click', () => toggleWhy()); $('word').addEventListener('click', () => toggleWhy()); $('whyX').addEventListener('click', () => toggleWhy(false));
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('why').hidden) toggleWhy(false); });
+
+/* ---------- compass ---------- */
+const cv = $('compass'), cx2 = cv.getContext('2d');
+function drawCompass() {
+  const r = cv.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1), w = Math.round(r.width * d), h = Math.round(r.height * d);
+  if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+  const cs = getComputedStyle(document.documentElement), ink = cs.getPropertyValue('--ink').trim(), card = cs.getPropertyValue('--card').trim(), bg = cs.getPropertyValue('--bg').trim();
+  const x = cx2, cx = w / 2, cy = h / 2, R = Math.min(w, h) / 2 - 30 * d, at = ([a, b]) => [cx + a * R, cy - b * R], inkA = a => ink.replace(')', ` / ${a})`);
+  x.clearRect(0, 0, w, h);
+  x.fillStyle = card; x.beginPath(); x.arc(cx, cy, R, 0, TAU); x.fill();
+  if (M && stable >= 0 && M.labels[stable] !== 'neutral') { const [sx0, sy0] = at(M.meta[stable].pos), sa = Math.atan2(sy0 - cy, sx0 - cx); x.fillStyle = withA(M.meta[stable].col, .1); x.beginPath(); x.moveTo(cx, cy); x.arc(cx, cy, R, sa - .5, sa + .5); x.closePath(); x.fill(); }
+  x.lineWidth = d; [1 / 3, 2 / 3].forEach(k => { x.strokeStyle = inkA(.1); x.beginPath(); x.arc(cx, cy, R * k, 0, TAU); x.stroke(); });
+  x.strokeStyle = inkA(.16); x.beginPath(); x.moveTo(cx - R, cy); x.lineTo(cx + R, cy); x.moveTo(cx, cy - R); x.lineTo(cx, cy + R); x.stroke();
+  x.strokeStyle = inkA(.3); x.beginPath(); [-1, -2 / 3, -1 / 3, 1 / 3, 2 / 3, 1].forEach(k => { x.moveTo(cx + k * R, cy - 4 * d); x.lineTo(cx + k * R, cy + 4 * d); x.moveTo(cx - 4 * d, cy + k * R); x.lineTo(cx + 4 * d, cy + k * R); }); x.stroke();
+  x.strokeStyle = inkA(.38); x.lineWidth = 1.5 * d; x.beginPath(); x.arc(cx, cy, R, 0, TAU); x.stroke();
+  x.fillStyle = inkA(.5); x.font = `600 ${9.5 * d}px 'Google Sans Flex', sans-serif`; x.textBaseline = 'alphabetic'; if ('letterSpacing' in x) x.letterSpacing = `${1.6 * d}px`;
+  x.textAlign = 'center'; x.fillText('ACTIVATED', cx, cy - R - 10 * d); x.fillText('CALM', cx, cy + R + 19 * d);
+  x.textAlign = 'right'; x.fillText('PLEASANT', cx + R - 8 * d, cy - 8 * d); x.textAlign = 'left'; x.fillText('UNPLEASANT', cx - R + 8 * d, cy - 8 * d); if ('letterSpacing' in x) x.letterSpacing = '0px';
+  if (!M) return;
+  M.meta.forEach((m, i) => {
+    const [X, Y] = at(m.pos), core = 5 * d, ring = core + (dp[i] || 0) * 13 * d, centre = m.pos[0] === 0 && m.pos[1] === 0;
+    x.strokeStyle = m.col; x.lineWidth = (i === stable ? 2 : 1.25) * d; x.beginPath(); x.arc(X, Y, ring, 0, TAU); x.stroke();
+    x.fillStyle = m.col; x.beginPath(); x.arc(X, Y, core, 0, TAU); x.fill();
+    const ty = centre ? Y + ring + 26 * d : m.pos[1] > 0 ? Y + ring + 18 * d : Y - ring - 22 * d; x.textAlign = centre ? 'left' : 'center';
+    const tx = centre ? X + ring + 6 * d : X;
+    x.fillStyle = ink; x.font = `700 ${12.5 * d}px 'Google Sans Flex', sans-serif`; x.fillText(m.name, tx, centre ? Y + 4 * d : ty);
+    x.fillStyle = inkA(.55); x.font = `600 ${11 * d}px 'Google Sans Flex', sans-serif`; x.fillText(Math.round((dp[i] || 0) * 100) + '%', tx, (centre ? Y + 4 * d : ty) + 14 * d);
+  });
+  if (stable < 0) return;
+  const tr = trail.concat([pos]); x.lineCap = 'round'; x.lineWidth = 1.75 * d;
+  for (let k = 1; k < tr.length; k++) { const a = at(tr[k - 1]), b = at(tr[k]); x.strokeStyle = inkA((k / tr.length * .4).toFixed(3)); x.beginPath(); x.moveTo(a[0], a[1]); x.lineTo(b[0], b[1]); x.stroke(); }
+  const [hx, hy] = at(pos), hr = 8 * d;
+  x.strokeStyle = inkA(.45); x.lineWidth = 1.25 * d; x.beginPath(); x.moveTo(cx, cy); x.lineTo(hx, hy); x.stroke();
+  x.fillStyle = M.meta[stable].col; x.beginPath(); x.arc(hx, hy, hr, 0, TAU); x.fill();
+  x.strokeStyle = bg; x.lineWidth = 2.5 * d; x.stroke();
+  x.strokeStyle = ink; x.lineWidth = 1.25 * d; x.beginPath(); x.arc(hx, hy, hr + 2.5 * d, 0, TAU); x.stroke();
+}
+
+/* ---------- loop ---------- */
+let prev = performance.now(), acc = 0;
+function loop(now) {
+  const dt = Math.min(.1, (now - prev) / 1000); prev = now;
+  if (running && M && video.readyState >= 2) { acc += dt; if (acc >= .1) { acc = 0; if (grab()) infer(); } }
+  if (M) {
+    ease(dp, probs, dt, 6); ease(pos, tgt(dp), dt, 6);
+    if (stable >= 0) { let dh = M.meta[stable].hue - hue; dh = ((dh + 540) % 360) - 180; hue = (hue + dh * (1 - Math.exp(-dt * 2.5)) + 360) % 360; document.documentElement.style.setProperty('--h', hue.toFixed(1)); }
+    rows.forEach(r => { r.fill.style.transform = `scaleX(${(dp[r.i] || 0).toFixed(4)})`; r.v.textContent = Math.round((dp[r.i] || 0) * 100) + '%'; });
+  }
+  drawCompass();
+  requestAnimationFrame(loop);
+}
+initModel();
+loadFaceDetector();
+requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

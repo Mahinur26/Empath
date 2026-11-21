@@ -1,0 +1,61 @@
+{
+  "labels_in_model_order": [
+    "angry",
+    "happy",
+    "neutral",
+    "sad",
+    "surprise"
+  ],
+  "test_images": 6043,
+  "accuracy": 0.6521595234155221,
+  "recall_by_label": {
+    "angry": 0.5772442588726514,
+    "happy": 0.7643742953776775,
+    "neutral": 0.5669099756690997,
+    "sad": 0.5324779470729751,
+    "surprise": 0.8050541516245487
+  },
+  "confusion_matrix_true_rows_predicted_columns": [
+    [
+      553,
+      58,
+      129,
+      164,
+      54
+    ],
+    [
+      111,
+      1356,
+      116,
+      122,
+      69
+    ],
+    [
+      153,
+      95,
+      699,
+      236,
+      50
+    ],
+    [
+      215,
+      84,
+      240,
+      664,
+      44
+    ],
+    [
+      60,
+      38,
+      30,
+      34,
+      669
+    ]
+  ],
+  "tflite_bytes": 58560,
+  "training_images": 21760,
+  "validation_images": 2416,
+  "epochs_run": 20,
+  "seed": 761,
+  "class_weighted": true
+}
