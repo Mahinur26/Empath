@@ -14,7 +14,7 @@ except ImportError:
 
 MODEL_PATH = "/flash/expression.tflite"
 LABELS_PATH = "/flash/labels.txt"
-MIN_SCORE = 0.60
+MIN_SCORE = 0.45
 GUIDE_SIZE = 112
 # Everyday sad and angry are subtler than the mostly posed training photos, so their scores are weighted up
 # before picking the winner (the camera page's "Angry/sad sensitivity" slider). Labels not in labels.txt are ignored.
