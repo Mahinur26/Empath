@@ -9,12 +9,13 @@ Example:
 
 import argparse
 import io
+import json
 import zipfile
 from pathlib import Path, PurePosixPath
 
 import numpy as np
 import tensorflow as tf
-from PIL import Image
+from PIL import Image, ImageOps
 
 
 def load_test(archive):
@@ -30,6 +31,8 @@ def load_test(archive):
 
 def evaluate(folder, items):
     labels = [line.strip() for line in (folder / "labels.txt").read_text().splitlines() if line.strip()]
+    metrics = folder / "model_metrics.json"
+    equalize = metrics.exists() and json.loads(metrics.read_text()).get("equalize", False)
     interpreter = tf.lite.Interpreter(model_path=str(folder / "expression.tflite"), num_threads=4)
     interpreter.allocate_tensors()
     inp, = interpreter.get_input_details()
@@ -37,6 +40,8 @@ def evaluate(folder, items):
     side = int(inp["shape"][1])
 
     def scores(gray):
+        if equalize:
+            gray = np.asarray(ImageOps.equalize(Image.fromarray(np.ascontiguousarray(gray))))
         if side != 48:
             gray = np.clip(np.round(tf.image.resize(gray[None, :, :, None].astype(np.float32), (side, side),
                                                     method="bilinear").numpy()[0, :, :, 0]), 0, 255).astype(np.uint8)

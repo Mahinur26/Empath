@@ -1,0 +1,85 @@
+{
+  "labels_in_model_order": [
+    "angry",
+    "happy",
+    "neutral",
+    "sad"
+  ],
+  "test_images": 4745,
+  "accuracy": 0.7905163329820865,
+  "recall_by_label": {
+    "angry": 0.8454746136865342,
+    "happy": 0.8464223385689355,
+    "neutral": 0.8084042021010506,
+    "sad": 0.5174216027874564
+  },
+  "confusion_matrix_true_rows_predicted_columns": [
+    [
+      383,
+      17,
+      48,
+      5
+    ],
+    [
+      123,
+      1455,
+      103,
+      38
+    ],
+    [
+      156,
+      92,
+      1616,
+      135
+    ],
+    [
+      68,
+      43,
+      166,
+      297
+    ]
+  ],
+  "flip_average_accuracy": 0.8107481559536354,
+  "flip_average_recall_by_label": {
+    "angry": 0.8675496688741722,
+    "happy": 0.8673647469458988,
+    "neutral": 0.8269134567283641,
+    "sad": 0.5400696864111498
+  },
+  "flip_average_confusion_matrix": [
+    [
+      393,
+      13,
+      43,
+      4
+    ],
+    [
+      104,
+      1491,
+      89,
+      35
+    ],
+    [
+      132,
+      80,
+      1653,
+      134
+    ],
+    [
+      60,
+      38,
+      166,
+      310
+    ]
+  ],
+  "tflite_bytes": 166360,
+  "training_images": 16746,
+  "validation_images": 1859,
+  "epochs_run": 24,
+  "seed": 761,
+  "class_weighted": true,
+  "soft_labels": false,
+  "equalize": true,
+  "arch": "wide",
+  "augmented": true
+}

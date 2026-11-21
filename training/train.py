@@ -8,7 +8,7 @@ from tempfile import TemporaryDirectory
 from zipfile import ZipFile
 
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageOps
 import tensorflow as tf
 
 
@@ -18,7 +18,7 @@ SEED = 761
 BOARD_DIR = Path(__file__).resolve().parents[1] / "openmv"
 
 
-def load_images(archive, labels_wanted=LABELS):
+def load_images(archive, labels_wanted=LABELS, equalize=False):
     counts = {"train": [], "test": []}
     with ZipFile(archive) as source:
         for name in sorted(source.namelist()):
@@ -35,9 +35,9 @@ def load_images(archive, labels_wanted=LABELS):
             labels = np.empty(len(files), dtype=np.int32)
             for index, (name, label) in enumerate(files):
                 with Image.open(io.BytesIO(source.read(name))) as image:
-                    images[index, :, :, 0] = image.convert("L").resize(
-                        (SIDE, SIDE), Image.Resampling.BILINEAR
-                    )
+                    gray = image.convert("L").resize((SIDE, SIDE), Image.Resampling.BILINEAR)
+                    # Histogram equalisation evens out lighting; web/camera.html applies the same PIL algorithm.
+                    images[index, :, :, 0] = ImageOps.equalize(gray) if equalize else gray
                 labels[index] = label
             if set(labels) != set(range(len(labels_wanted))):
                 raise ValueError(f"Missing categories in the {split} split")
@@ -80,7 +80,21 @@ def build_model(class_count=len(LABELS), arch="small"):
     return model
 
 
-def batches(images, labels, training=False, strong=False):
+def cutout(pixels, lower_face=0.35, patch=0.5):
+    """Hide parts of each face so the model cannot lean on one region (FER's angry = open mouth, sad = covered
+    face shortcuts). With probability `lower_face` the mouth area is greyed out; with probability `patch` a
+    random 8-24 px rectangle is. Hidden pixels take the image's mean grey."""
+    b = tf.shape(pixels)[0]
+    rows = tf.range(SIDE, dtype=tf.float32)[None, :, None, None]
+    cols = tf.range(SIDE, dtype=tf.float32)[None, None, :, None]
+    u = lambda lo, hi: tf.random.uniform((b, 1, 1, 1), lo, hi)
+    box = (tf.abs(rows - u(0, SIDE)) < u(4, 12)) & (tf.abs(cols - u(0, SIDE)) < u(4, 12)) & (u(0, 1) < patch)
+    lower = (rows >= u(27, 35)) & (u(0, 1) < lower_face)
+    mean = tf.reduce_mean(pixels, axis=[1, 2, 3], keepdims=True)
+    return tf.where(box | lower, mean * tf.ones_like(pixels), pixels)
+
+
+def batches(images, labels, training=False, strong=False, hide=False):
     dataset = tf.data.Dataset.from_tensor_slices((images, labels))
     if training:
         dataset = dataset.shuffle(len(labels), seed=SEED)
@@ -100,6 +114,8 @@ def batches(images, labels, training=False, strong=False):
             if strong:
                 pixels = tf.image.random_contrast(pixels, 0.75, 1.25)
                 pixels = geometry(pixels, training=True)
+            if hide:
+                pixels = cutout(pixels)
             pixels = tf.clip_by_value(pixels, 0.0, 1.0)
         return pixels, classes
 
@@ -177,6 +193,10 @@ def main():
                         help="small = original ~58 KB CNN; wide = two convs per block, ~150 KB")
     parser.add_argument("--augment", action="store_true",
                         help="Add shift, rotation, zoom and contrast augmentation")
+    parser.add_argument("--cutout", action="store_true",
+                        help="Randomly hide the lower face or a patch while training, so the model also uses brows and eyes")
+    parser.add_argument("--equalize", action="store_true",
+                        help="Histogram-equalise every 48x48 face (train and test); the camera page and firmware must do the same")
     parser.add_argument("--soft", type=Path, default=None,
                         help="JSON {path in ZIP: [vote share per label, in --labels order]} for soft-label training (FER+ votes)")
     args = parser.parse_args()
@@ -186,7 +206,7 @@ def main():
     tf.config.threading.set_intra_op_parallelism_threads(8)
     tf.config.threading.set_inter_op_parallelism_threads(2)
     rng = np.random.default_rng(SEED)
-    data = load_images(args.dataset, names)
+    data = load_images(args.dataset, names, equalize=args.equalize)
     images, labels = data["train"]
     train, validation = split_training(labels, rng, len(names))
     print(f"Training {names} on {len(train)} images, validating on {len(validation)}", flush=True)
@@ -209,7 +229,7 @@ def main():
     # Augmented training is noisier epoch to epoch, so give it more patience before cutting the rate or stopping.
     stop_patience, lr_patience = (10, 4) if args.augment else (5, 2)
     history = model.fit(
-        batches(images[train], train_targets, training=True, strong=args.augment),
+        batches(images[train], train_targets, training=True, strong=args.augment, hide=args.cutout),
         validation_data=batches(images[validation], val_targets),
         epochs=args.epochs,
         callbacks=[tf.keras.callbacks.EarlyStopping(monitor="val_accuracy", patience=stop_patience,
@@ -223,6 +243,7 @@ def main():
     report = evaluate_int8(lite_model, *data["test"], names)
     report.update(training_images=len(train), validation_images=len(validation),
                   epochs_run=len(history.epoch), seed=SEED, class_weighted=bool(args.balance), soft_labels=bool(args.soft),
+                  equalize=bool(args.equalize), cutout=bool(args.cutout),
                   arch=args.arch, augmented=bool(args.augment))
 
     args.out.mkdir(parents=True, exist_ok=True)
