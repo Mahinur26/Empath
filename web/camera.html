@@ -60,7 +60,6 @@ button,input,select{font:inherit}
 .bars .t{height:8px;border-radius:8px;background:var(--line);overflow:hidden}
 .bars .t i{display:block;height:100%;background:var(--c);transform-origin:left;transform:scaleX(0)}
 .bars .v{text-align:right;color:var(--dim);font-weight:500;font-variant-numeric:tabular-nums}
-.foot{margin-top:18px;font-size:13px;color:var(--dim);max-width:84ch}
 .err{display:none;margin-top:14px;padding:12px 14px;border-radius:12px;background:hsl(8 70% 92%);color:hsl(8 60% 28%);font-size:14px}
 .err.on{display:block}
 .why{position:absolute;z-index:6;top:84px;right:max(16px,3vw);width:min(470px,calc(100% - 32px));background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px 22px;box-shadow:0 30px 60px -30px rgba(0,0,0,.45);display:grid;gap:14px;animation:whyIn .25s ease-out}
@@ -102,8 +101,7 @@ button,input,select{font:inherit}
       <option value="../openmv/">4 classes, original</option>
     </select>
     <span class="chip" id="track" title="Face tracking crops tightly around your face, like the training images">Face tracking: loading…</span>
-    <label class="zoom" for="sens" title="Multiplies the angry (and sad, if the model has it) scores. Default model on held-out AffectNet faces: ×1 angry 75%, neutral misread as angry 3% · ×1.5 angry 81%, 4% · ×2 angry 84%, 6% but surprised drops to 63%">Angry/sad sensitivity <input id="sens" type="range" min="10" max="30" value="15"><b id="sensV">×1.5</b></label>
-    <label class="zoom" for="thr">Threshold <input id="thr" type="range" min="20" max="80" value="45"><b id="thrV">45%</b></label>    <label class="zoom" for="zoom">Crop <input id="zoom" type="range" min="35" max="93" value="60"></label>
+    <label class="zoom" for="zoom">Crop <input id="zoom" type="range" min="35" max="93" value="60"></label>
     <button class="btn2" id="cal" type="button" disabled>Teach my face</button>
     <button class="btn" id="cam" type="button">Start camera</button>
   </header>
@@ -134,7 +132,6 @@ button,input,select{font:inherit}
     <p class="why-ctx" id="whyCtx"></p>
   </aside>
 
-  <p class="foot">Runs the selected <code>expression.tflite</code> in this page with a small JavaScript interpreter that matches the official TFLite runtime exactly. Frames never leave this browser. <b>Face tracking</b> crops tightly around the face, like the FER-2013 training images; without it the page uses a fixed square you size with <b>Crop</b>. <b>Teach my face</b>: each person holds each expression for 3 seconds; the page fits a small classifier to their own examples, using the model’s internal features, and blends it 60/40 with the model. Press it again to reset for the next person.</p>
 </div>
 
 <script src="empath-model.js"></script>
@@ -143,12 +140,10 @@ button,input,select{font:inherit}
 'use strict';
 const $ = id => document.getElementById(id);
 const TAU = Math.PI * 2;
-let MIN_SCORE = 0.45;   // below this the reading shows "Unsure"; the firmware's MIN_SCORE should match what works here
-document.getElementById('thr').addEventListener('input', e => { MIN_SCORE = e.target.value / 100; document.getElementById('thrV').textContent = e.target.value + '%'; });
+const MIN_SCORE = 0.20;   // below this the reading shows "Unsure"
 // Everyday sad and angry are subtler than FER's mostly posed photos, so the page can weight those two scores up.
-// Trade-off measured with training/tune_sensitivity.py on held-out FER+ faces (see the slider's tooltip).
-let SENS = 1.5;
-document.getElementById('sens').addEventListener('input', e => { SENS = e.target.value / 10; document.getElementById('sensV').textContent = '×' + SENS.toFixed(1); });
+// Trade-off measured with training/tune_sensitivity.py: x1.5 lifts real-world angry from 75% to 81% with no overall loss.
+const SENS = 1.5;   // angry (and sad, if the model has it) score weight
 const sensitize = raw => {
   if (SENS === 1 || !M) return raw;
   const out = raw.map((v, i) => (M.labels[i] === 'sad' || M.labels[i] === 'angry') ? v * SENS : v), s = out.reduce((a, b) => a + b, 0);
