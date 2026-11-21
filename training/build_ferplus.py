@@ -12,6 +12,10 @@ EMO = ["neutral", "happiness", "surprise", "sadness", "anger", "disgust", "fear"
 NAMES = {"anger": "angry", "happiness": "happy", "neutral": "neutral", "sadness": "sad", "surprise": "surprise",
          "fear": "fear", "disgust": "disgust"}
 KEEP = {k: v for k, v in NAMES.items() if v in WANTED}
+# Optional 4th argument folds classes together, e.g. "disgust=angry" (a scrunched face counts as angry).
+for pair in (sys.argv[4].split(",") if len(sys.argv) > 4 else []):
+    source, target = pair.split("=")
+    KEEP[next(k for k, v in NAMES.items() if v == source)] = target
 votes = plus[EMO].values; total = votes.sum(1) + plus["unknown"].values + plus["NF"].values
 top = votes.argmax(1); topv = votes.max(1)
 counts = {}

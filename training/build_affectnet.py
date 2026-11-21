@@ -25,6 +25,10 @@ from PIL import Image
 
 ALL = {0: "angry", 1: "surprise", 3: "happy", 4: "neutral", 5: "fear", 6: "sad", 7: "disgust"}
 AFFECT = {k: v for k, v in ALL.items() if v in (sys.argv[5] if len(sys.argv) > 5 else "angry,happy,neutral,sad").split(",")}
+# Optional 6th argument folds classes together, e.g. "disgust=angry"; applied to training images only, so the
+# AffectNet test set keeps pure labels.
+MERGE = dict(pair.split("=") for pair in sys.argv[6].split(",")) if len(sys.argv) > 6 else {}
+TRAIN_AFFECT = {**AFFECT, **{k: MERGE[v] for k, v in ALL.items() if v in MERGE}}
 CROP = (15.1, 14.4, 80.8, 80.1)   # in 96x96 pixels: eyes land at FER's 37.5% height, 39.6% apart
 
 
@@ -36,9 +40,9 @@ def face48(raw):
     return out.getvalue()
 
 
-def add_affect(z, frame, split, counts):
+def add_affect(z, frame, split, counts, mapping=AFFECT):
     for i, (img, label) in enumerate(zip(frame["image"], frame["label"])):
-        name = AFFECT.get(int(label))
+        name = mapping.get(int(label))
         if name:
             z.writestr(f"{split}/{name}/affect{i:06d}.png", face48(img["bytes"]))
             counts[(split, name)] = counts.get((split, name), 0) + 1
@@ -53,7 +57,7 @@ def main():
                 if name.endswith(".png"):
                     z.writestr(name, f.read(name))
                     counts[(name.split("/")[0] + "_ferplus", name.split("/")[1])] = counts.get((name.split("/")[0] + "_ferplus", name.split("/")[1]), 0) + 1
-        add_affect(z, pd.read_parquet(f"{src}/train.parquet"), "train", counts)
+        add_affect(z, pd.read_parquet(f"{src}/train.parquet"), "train", counts, TRAIN_AFFECT)
     with zipfile.ZipFile(affect_test, "w", zipfile.ZIP_STORED) as z:
         add_affect(z, pd.read_parquet(f"{src}/val.parquet"), "test", counts)
     for key in sorted(counts):
