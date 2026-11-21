@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="696" height="646" viewBox="0 0 696 646" font-family="'Google Sans','Product Sans','Segoe UI',system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif" role="img" aria-label="Confusion matrix of the recommended model on the FER+ test set">
+<title>Confusion matrix of the recommended model on the FER+ test set</title>
+<rect width="696" height="646" rx="28" fill="#f6f2e7"/>
+<text x="48" y="62" font-size="30" fill="#2f2a1a" font-weight="700" text-anchor="start" >Where it gets confused</text>
+<text x="48" y="96" font-size="17" fill="#6e6857" font-weight="400" text-anchor="start" >FER+ test, 4,910 faces · rows: true expression · columns: model's reading</text>
+<text x="428.0" y="124" font-size="16" fill="#6e6857" font-weight="600" text-anchor="middle" >Model reads</text>
+<text x="272.0" y="156" font-size="16" fill="#2f2a1a" font-weight="600" text-anchor="middle" >Angry</text>
+<text x="376.0" y="156" font-size="16" fill="#2f2a1a" font-weight="600" text-anchor="middle" >Happy</text>
+<text x="480.0" y="156" font-size="16" fill="#2f2a1a" font-weight="600" text-anchor="middle" >Neutral</text>
+<text x="584.0" y="156" font-size="16" fill="#2f2a1a" font-weight="600" text-anchor="middle" >Surprised</text>
+<circle cx="62" cy="222.0" r="8" fill="#cf5d4c"/>
+<text x="80" y="228.0" font-size="18" fill="#2f2a1a" font-weight="600" text-anchor="start" >Angry</text>
+<rect x="223" y="173" width="98" height="98" rx="14" fill="#cf5d4c" opacity="0.83"/>
+<text x="272.0" y="230.0" font-size="22" fill="#ffffff" font-weight="700" text-anchor="middle" >77%</text>
+<rect x="327" y="173" width="98" height="98" rx="14" fill="#2f2a1a" opacity="0.16"/>
+<text x="376.0" y="230.0" font-size="18" fill="#2f2a1a" font-weight="500" text-anchor="middle" >4%</text>
+<rect x="431" y="173" width="98" height="98" rx="14" fill="#2f2a1a" opacity="0.42"/>
+<text x="480.0" y="230.0" font-size="18" fill="#ffffff" font-weight="500" text-anchor="middle" >16%</text>
+<rect x="535" y="173" width="98" height="98" rx="14" fill="#2f2a1a" opacity="0.10"/>
+<text x="584.0" y="230.0" font-size="18" fill="#2f2a1a" font-weight="500" text-anchor="middle" >2%</text>
+<circle cx="62" cy="326.0" r="8" fill="#d6962a"/>
+<text x="80" y="332.0" font-size="18" fill="#2f2a1a" font-weight="600" text-anchor="start" >Happy</text>
+<rect x="223" y="277" width="98" height="98" rx="14" fill="#2f2a1a" opacity="0.13"/>
+<text x="272.0" y="334.0" font-size="18" fill="#2f2a1a" font-weight="500" text-anchor="middle" >3%</text>
+<rect x="327" y="277" width="98" height="98" rx="14" fill="#d6962a" opacity="0.92"/>
+<text x="376.0" y="334.0" font-size="22" fill="#ffffff" font-weight="700" text-anchor="middle" >90%</text>
+<rect x="431" y="277" width="98" height="98" rx="14" fill="#2f2a1a" opacity="0.17"/>
+<text x="480.0" y="334.0" font-size="18" fill="#2f2a1a" font-weight="500" text-anchor="middle" >5%</text>
+<rect x="535" y="277" width="98" height="98" rx="14" fill="#2f2a1a" opacity="0.10"/>
+<text x="584.0" y="334.0" font-size="18" fill="#2f2a1a" font-weight="500" text-anchor="middle" >2%</text>
+<circle cx="62" cy="430.0" r="8" fill="#6f8a82"/>
+<text x="80" y="436.0" font-size="18" fill="#2f2a1a" font-weight="600" text-anchor="start" >Neutral</text>
+<rect x="223" y="381" width="98" height="98" rx="14" fill="#2f2a1a" opacity="0.14"/>
+<text x="272.0" y="438.0" font-size="18" fill="#2f2a1a" font-weight="500" text-anchor="middle" >4%</text>
+<rect x="327" y="381" width="98" height="98" rx="14" fill="#2f2a1a" opacity="0.13"/>
+<text x="376.0" y="438.0" font-size="18" fill="#2f2a1a" font-weight="500" text-anchor="middle" >3%</text>
+<rect x="431" y="381" width="98" height="98" rx="14" fill="#6f8a82" opacity="0.93"/>
+<text x="480.0" y="438.0" font-size="22" fill="#ffffff" font-weight="700" text-anchor="middle" >90%</text>
+<rect x="535" y="381" width="98" height="98" rx="14" fill="#2f2a1a" opacity="0.12"/>
+<text x="584.0" y="438.0" font-size="18" fill="#2f2a1a" font-weight="500" text-anchor="middle" >3%</text>
+<circle cx="62" cy="534.0" r="8" fill="#8466d2"/>
+<text x="80" y="540.0" font-size="18" fill="#2f2a1a" font-weight="600" text-anchor="start" >Surprised</text>
+<rect x="223" y="485" width="98" height="98" rx="14" fill="#2f2a1a" opacity="0.10"/>
+<text x="272.0" y="542.0" font-size="18" fill="#2f2a1a" font-weight="500" text-anchor="middle" >2%</text>
+<rect x="327" y="485" width="98" height="98" rx="14" fill="#2f2a1a" opacity="0.10"/>
+<text x="376.0" y="542.0" font-size="18" fill="#2f2a1a" font-weight="500" text-anchor="middle" >2%</text>
+<rect x="431" y="485" width="98" height="98" rx="14" fill="#2f2a1a" opacity="0.15"/>
+<text x="480.0" y="542.0" font-size="18" fill="#2f2a1a" font-weight="500" text-anchor="middle" >4%</text>
+<rect x="535" y="485" width="98" height="98" rx="14" fill="#8466d2" opacity="0.94"/>
+<text x="584.0" y="542.0" font-size="22" fill="#ffffff" font-weight="700" text-anchor="middle" >92%</text>
+</svg>

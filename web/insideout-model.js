@@ -7,7 +7,7 @@
  * so the presentation page never needs a TFLite runtime or a network fetch.
  *
  * Usage:
- *   const model = EmpathModel.load(arrayBuffer);
+ *   const model = InsideOutModel.load(arrayBuffer);
  *   const scores = model.predictGray(gray48);       // Uint8Array(48*48), 0..255
  *   const map = model.occlusion(gray48, 6);         // { base, top, drops[36] }
  */
@@ -287,5 +287,5 @@
     };
   }
 
-  root.EmpathModel = { load };
+  root.InsideOutModel = { load };
 })(typeof window !== 'undefined' ? window : globalThis);

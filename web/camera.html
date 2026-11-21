@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Empath Camera Test</title>
+<title>Inside Out Camera Test</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@300..800&display=swap">
@@ -85,7 +85,7 @@ button,input,select{font:inherit}
 <body>
 <div class="page">
   <header class="head">
-    <div class="brand">Empath</div>
+    <div class="brand">Inside Out</div>
     <span class="status" id="status">Camera off</span>
     <select class="sel" id="modelSel" aria-label="Model">
       <option value="../openmv/plus_affect_surprise_dis/">Default · angry (incl. scrunched), happy, neutral, surprised</option>
@@ -134,7 +134,7 @@ button,input,select{font:inherit}
 
 </div>
 
-<script src="empath-model.js"></script>
+<script src="insideout-model.js"></script>
 <script>
 (() => {
 'use strict';
@@ -185,7 +185,7 @@ async function loadModel(dir) {
     let cm = null, eq = false;
     try { const r = await fetch(dir + 'model_metrics.json'); if (r.ok) { const j = await r.json(); cm = j.confusion_matrix_true_rows_predicted_columns; eq = !!j.equalize; } } catch (e) {}
     if (!cm) { try { const r = await fetch(dir + '../model_metrics.json'); if (r.ok) { const j = await r.json(); if (j.labels_in_model_order && j.labels_in_model_order.join() === labels.join()) cm = j.confusion_matrix_true_rows_predicted_columns; } } catch (e) {} }
-    const model = EmpathModel.load(buf), n = labels.length;
+    const model = InsideOutModel.load(buf), n = labels.length;
     const meta = labels.map(l => META[l] || { name: l[0].toUpperCase() + l.slice(1), low: l, pos: [0, 0], hue: 200, col: '#888888', cues: [], ctx: '' });
     M = { model, labels, meta, n, cm, eq, rowsum: cm ? cm.map(r => r.reduce((a, b) => a + b, 0)) : null, neutral: labels.indexOf('neutral') };
     probs = Array(n).fill(1 / n); dp = probs.slice(); stable = -1; cand = -1; run = 0; tops = []; personal = null; teach = null; trail.length = 0; lastWord = '';

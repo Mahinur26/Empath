@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="608" viewBox="0 0 1000 608" font-family="'Google Sans','Product Sans','Segoe UI',system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif" role="img" aria-label="Accuracy improvements from each training fix">
+<title>Accuracy improvements from each training fix</title>
+<rect width="1000" height="608" rx="28" fill="#f6f2e7"/>
+<text x="48" y="62" font-size="30" fill="#2f2a1a" font-weight="700" text-anchor="start" >What moved the needle</text>
+<text x="48" y="96" font-size="17" fill="#6e6857" font-weight="400" text-anchor="start" >Each fix targeted a failure we saw in live tests</text>
+<line x1="540" y1="170" x2="540" y2="538" stroke="#ddd3b8" stroke-dasharray="3 5"/>
+<text x="540" y="566" font-size="14" fill="#6e6857" font-weight="400" text-anchor="middle" >25%</text>
+<line x1="673" y1="170" x2="673" y2="538" stroke="#ddd3b8" stroke-dasharray="3 5"/>
+<text x="673" y="566" font-size="14" fill="#6e6857" font-weight="400" text-anchor="middle" >50%</text>
+<line x1="807" y1="170" x2="807" y2="538" stroke="#ddd3b8" stroke-dasharray="3 5"/>
+<text x="807" y="566" font-size="14" fill="#6e6857" font-weight="400" text-anchor="middle" >75%</text>
+<line x1="940" y1="170" x2="940" y2="538" stroke="#ddd3b8" stroke-dasharray="3 5"/>
+<text x="940" y="566" font-size="14" fill="#6e6857" font-weight="400" text-anchor="middle" >100%</text>
+<circle cx="56" cy="138" r="8" fill="#c4bca6"/>
+<text x="72" y="144" font-size="15" fill="#6e6857" font-weight="400" text-anchor="start" >before</text>
+<circle cx="146" cy="138" r="9" fill="#9c7a25"/>
+<text x="162" y="144" font-size="15" fill="#6e6857" font-weight="400" text-anchor="start" >after</text>
+<text x="48" y="194" font-size="20" fill="#2f2a1a" font-weight="600" text-anchor="start" >Neutral faces read as neutral</text>
+<text x="48" y="222" font-size="15" fill="#6e6857" font-weight="400" text-anchor="start" >FER+ relabels replace noisy FER-2013 labels</text>
+<line x1="705" y1="190" x2="833" y2="190" stroke="#9c7a25" stroke-width="6" stroke-linecap="round" opacity=".35"/>
+<circle cx="705" cy="190" r="9" fill="#c4bca6"/>
+<circle cx="833" cy="190" r="11" fill="#9c7a25"/>
+<text x="689" y="196" font-size="15" fill="#6e6857" font-weight="400" text-anchor="end" >56%</text>
+<text x="851" y="196" font-size="17" fill="#2f2a1a" font-weight="700" text-anchor="start" >80%</text>
+<text x="48" y="286" font-size="20" fill="#2f2a1a" font-weight="600" text-anchor="start" >Accuracy with the mouth hidden</text>
+<text x="48" y="314" font-size="15" fill="#6e6857" font-weight="400" text-anchor="start" >Cutout training stops it relying on the mouth</text>
+<line x1="604" y1="282" x2="764" y2="282" stroke="#9c7a25" stroke-width="6" stroke-linecap="round" opacity=".35"/>
+<circle cx="604" cy="282" r="9" fill="#c4bca6"/>
+<circle cx="764" cy="282" r="11" fill="#9c7a25"/>
+<text x="588" y="288" font-size="15" fill="#6e6857" font-weight="400" text-anchor="end" >37%</text>
+<text x="782" y="288" font-size="17" fill="#2f2a1a" font-weight="700" text-anchor="start" >67%</text>
+<text x="48" y="378" font-size="20" fill="#2f2a1a" font-weight="600" text-anchor="start" >Accuracy on in-the-wild faces</text>
+<text x="48" y="406" font-size="15" fill="#6e6857" font-weight="400" text-anchor="start" >AffectNet photos added to the posed FER+ set</text>
+<line x1="767" y1="374" x2="837" y2="374" stroke="#9c7a25" stroke-width="6" stroke-linecap="round" opacity=".35"/>
+<circle cx="767" cy="374" r="9" fill="#c4bca6"/>
+<circle cx="837" cy="374" r="11" fill="#9c7a25"/>
+<text x="751" y="380" font-size="15" fill="#6e6857" font-weight="400" text-anchor="end" >68%</text>
+<text x="855" y="380" font-size="17" fill="#2f2a1a" font-weight="700" text-anchor="start" >81%</text>
+<text x="48" y="470" font-size="20" fill="#2f2a1a" font-weight="600" text-anchor="start" >Everyday angry faces caught</text>
+<text x="48" y="498" font-size="15" fill="#6e6857" font-weight="400" text-anchor="start" >Angry score weighted ×1.5 before picking</text>
+<line x1="780" y1="466" x2="807" y2="466" stroke="#9c7a25" stroke-width="6" stroke-linecap="round" opacity=".35"/>
+<circle cx="780" cy="466" r="9" fill="#c4bca6"/>
+<circle cx="807" cy="466" r="11" fill="#9c7a25"/>
+<text x="764" y="472" font-size="15" fill="#6e6857" font-weight="400" text-anchor="end" >70%</text>
+<text x="825" y="472" font-size="17" fill="#2f2a1a" font-weight="700" text-anchor="start" >75%</text>
+</svg>
