@@ -18,7 +18,10 @@ button,input,select{font:inherit}
 :focus-visible{outline:2px solid var(--acc);outline-offset:3px}
 .page{max-width:1240px;margin:0 auto;padding:22px max(16px,3vw) 32px;position:relative}
 .head{display:flex;align-items:center;gap:12px 16px;flex-wrap:wrap}
-.brand{font-size:22px;font-weight:600;margin-right:auto}
+.brand{font-size:22px;font-weight:600;margin-right:auto;display:flex;align-items:center;gap:10px}
+.mark{width:36px;height:36px;flex:none;--mc:#d6962a}
+.mark path{fill:none;stroke:var(--mc);stroke-width:8;stroke-linecap:round;transition:d .5s cubic-bezier(.3,.8,.25,1),stroke .5s ease}
+.mark path.eye{fill:var(--ink);stroke:var(--ink);stroke-width:2;stroke-linejoin:round}
 .status{font-size:13px;color:var(--dim)}
 .status b{color:var(--ink);font-weight:600}
 .zoom{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--dim)}
@@ -85,7 +88,7 @@ button,input,select{font:inherit}
 <body>
 <div class="page">
   <header class="head">
-    <div class="brand">Inside Out</div>
+    <div class="brand"><svg class="mark" id="mark" viewBox="0 0 100 100" role="img" aria-label="Inside Out logo"><path id="mkL"/><path id="mkR"/><path id="mkEL" class="eye"/><path id="mkER" class="eye"/></svg>Inside Out</div>
     <span class="status" id="status">Camera off</span>
     <select class="sel" id="modelSel" aria-label="Model">
       <option value="../openmv/plus_affect_surprise_dis/">Default · angry (incl. scrunched), happy, neutral, surprised</option>
@@ -135,6 +138,7 @@ button,input,select{font:inherit}
 </div>
 
 <script src="insideout-model.js"></script>
+<script src="brows.js"></script>
 <script>
 (() => {
 'use strict';
@@ -163,6 +167,16 @@ const DISPLAY = ['happy', 'surprise', 'neutral', 'sad', 'angry', 'fear', 'disgus
 const ease = (a, t, dt, k) => { const f = 1 - Math.exp(-dt * k); for (let i = 0; i < a.length; i++) a[i] += (t[i] - a[i]) * f; };
 const withA = (hex, a) => { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; };
 const argmax = a => a.indexOf(Math.max(...a));
+// The header logo's brows wear the current reading. Idle (camera off) shows the happy mark in brand amber.
+let markMood = '';
+function setMark(mood, col) {
+  if (mood === markMood) return; markMood = mood;
+  const s = Brows.shape(mood === 'idle' ? 'happy' : mood), set = (id, d) => { $(id).style.d = `path('${d}')`; };
+  set('mkL', s.l); set('mkR', s.r); set('mkEL', s.el); set('mkER', s.er);
+  $('mark').style.setProperty('--mc', col); $('mark').setAttribute('aria-label', `Inside Out logo, ${mood === 'idle' ? 'idle' : mood}`);
+}
+const idleMark = () => setMark('idle', '#d6962a');
+idleMark();
 
 /* ---------- state ---------- */
 let M = null;            // { model, labels, meta, n, cm, rowsum, neutral }
@@ -229,7 +243,7 @@ async function start() {
 }
 function stop() {
   running = false; if (stream) stream.getTracks().forEach(t => t.stop()); stream = null;
-  $('cam').textContent = 'Start camera'; $('status').textContent = 'Camera off';
+  $('cam').textContent = 'Start camera'; $('status').textContent = 'Camera off'; idleMark();
   if (teach) { teach = null; showTeach(); } const c = $('cal'); c.disabled = true; if (!personal) c.textContent = 'Teach my face';
 }
 $('cam').addEventListener('click', () => running ? stop() : start());
@@ -395,6 +409,7 @@ function infer() {
 let lastWord = '';
 function updateText() {
   const sure = probs[stable] >= MIN_SCORE, w = sure ? M.meta[stable].name : 'Unsure';
+  setMark(sure ? M.labels[stable] : 'unsure', sure ? M.meta[stable].col : '#8a8a93');
   if (w !== lastWord) { lastWord = w; const el = $('word'); el.textContent = w; el.classList.remove('in'); void el.offsetWidth; el.classList.add('in'); }
   $('conf').textContent = Math.round(probs[stable] * 100) + (personal ? '% · tuned to this face' : '% model score');
   const st = tops.filter(t => t === stable).length / tops.length; $('sv').textContent = Math.round(st * 100) + '%'; $('sb').style.width = (st * 100).toFixed(0) + '%';

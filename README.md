@@ -42,7 +42,7 @@ When no expression scores above 20%, it says **unsure** instead of guessing.
 1. **Connect.** Plug the Nicla Vision in with a USB data cable and click **Connect** in OpenMV IDE. Install the latest OpenMV firmware if prompted. See [Arduino's Nicla Vision setup guide](https://docs.arduino.cc/tutorials/nicla-vision/user-manual).
 2. **Copy the model.** Copy [`expression.tflite`](openmv/plus_affect_surprise_dis/expression.tflite) and [`labels.txt`](openmv/plus_affect_surprise_dis/labels.txt) to the root of the drive that appears for the board. Keep the two files together. Any other model folder in `openmv/` works the same way.
 3. **Run.** Open [`openmv/main.py`](openmv/main.py) and click **Run**. Center one face inside the square in the preview. The expression and its score appear over the preview and in the serial terminal.
-4. **Go standalone.** Save the script as `main.py` on the board's drive and copy [`ssd1306.py`](openmv/ssd1306.py) next to it. Then eject the drive and reset the board. With the OLED wired to J2 and the battery connected, the glasses start on power-up and update the display about twice per second. They also run with no OLED attached.
+4. **Go standalone.** Save the script as `main.py` on the board's drive and copy [`ssd1306.py`](openmv/ssd1306.py) next to it. Then eject the drive and reset the board. With the OLED wired to J2 and the battery connected, the glasses start on power-up and update the display about twice per second. The OLED shows the logo's brows in the shape of the current reading next to the label and score. The glasses also run with no OLED attached.
 
 > [!NOTE]
 > The square is a fixed crop, so fill most of it with one front-facing face. The model always produces a score, even for an empty frame or an expression it wasn't trained on. It's about 166 KB, roughly six times the compute of the original model. **We haven't measured its frame rate or memory use on the board yet.**
@@ -53,7 +53,7 @@ When no expression scores above 20%, it says **unsure** instead of guessing.
 | Setting | Value | What it does |
 |---|---|---|
 | `MIN_SCORE` | `0.20` | Below this the glasses show `unsure` |
-| `SENSITIVITY` | `{"angry": 1.5, "sad": 2.0}` | Multiplies a class's score before picking the winner. Everyday angry faces are subtler than the training photos. The `sad` entry only applies to models that have a sad class. |
+| `SENSITIVITY` | `{"angry": 1.5, "sad": 1.5}` | Multiplies a class's score before picking the winner. Everyday angry faces are subtler than the training photos. The `sad` entry only applies to models that have a sad class. |
 
 The laptop camera page uses the same threshold and angry weight, so both show the same reading.
 
@@ -71,6 +71,7 @@ py -m http.server 8000
 | Feature | What it adds |
 |---|---|
 | 🎯 **Face tracking** | Finds the face and lines up the eyes the way the training photos are aligned, so you don't need to hold a fixed square |
+| 🙂 **Living logo** | The brows in the header logo take the shape and color of the current reading |
 | 🧭 **Expression compass** | Shows the reading by pleasantness and energy, with neutral at the center |
 | 🔍 **"Why this reading?"** | Lists the facial cues for the expression, flags close calls, and shows an occlusion map of the face regions the model relied on |
 | 🔀 **Model switcher** | Switch between any trained model folder live |
@@ -124,13 +125,16 @@ flowchart LR
     BAT["🔋 LiPo 3.7 V<br/>820 mAh"] -- red + --> SW["🔘 Slide switch"]
     SW --> VBAT["Nicla J3 · VBAT"]
     BAT -- black − --> GND["Nicla J2-6 · GND"]
-    subgraph OLED["📟 SSD1306 0.96&quot; OLED"]
-      VCC & OG["GND"] & SCL & SDA
+    subgraph OLED["📟 SSD1306 0.96 inch OLED"]
+      OV["VCC"]
+      OG["GND"]
+      OC["SCL"]
+      OD["SDA"]
     end
-    VCC --> V33["Nicla J2-7 · VDDIO_EXT 3.3 V"]
+    OV --> V33["Nicla J2-7 · VDDIO_EXT 3.3 V"]
     OG --> GND
-    SCL --> P2["Nicla J2-2 · SCL"]
-    SDA --> P1["Nicla J2-1 · SDA"]
+    OC --> P2["Nicla J2-2 · SCL"]
+    OD --> P1["Nicla J2-1 · SDA"]
 ```
 
 | Part | Notes |
@@ -169,7 +173,7 @@ py -3.11 -m venv .venv
 .\.venv\Scripts\python.exe training\train.py path\to\fer2013.zip
 ```
 
-To redraw the README charts after retraining, run `py docs/make_figures.py`.
+To redraw the README charts after retraining, run `py docs/make_figures.py`. To redraw the OLED brows icons after changing their shapes in [`web/brows.js`](web/brows.js), update the same numbers in [`openmv/make_brows_icons.py`](openmv/make_brows_icons.py) and run it; it rewrites the icon block in `main.py`.
 
 </details>
 
