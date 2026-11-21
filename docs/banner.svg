@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="420" viewBox="0 0 1280 420" font-family="'Google Sans','Product Sans','Segoe UI',system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif" role="img" aria-label="Inside Out: glasses that read facial expressions on a microcontroller">
+<title>Inside Out: glasses that read facial expressions on a microcontroller</title>
+<rect width="1280" height="420" rx="28" fill="#f6f2e7"/>
+<text x="88" y="168" font-size="104" fill="#2f2a1a" font-weight="700" text-anchor="start" letter-spacing="-3">Inside Out</text>
+<text x="92" y="222" font-size="30" fill="#6e6857" font-weight="400" text-anchor="start" >Glasses that read facial expressions,</text>
+<text x="92" y="262" font-size="30" fill="#6e6857" font-weight="400" text-anchor="start" >running on a microcontroller with 1 MB of RAM.</text>
+<rect x="92" y="304" width="226" height="40" rx="20" fill="#efe6cc" stroke="#ddd3b8"/>
+<text x="205.0" y="330" font-size="17" fill="#2f2a1a" font-weight="500" text-anchor="middle" >Arduino Nicla Vision</text>
+<rect x="330.0" y="304" width="195" height="40" rx="20" fill="#efe6cc" stroke="#ddd3b8"/>
+<text x="427.7" y="330" font-size="17" fill="#2f2a1a" font-weight="500" text-anchor="middle" >166 KB INT8 model</text>
+<rect x="537.4" y="304" width="104" height="40" rx="20" fill="#efe6cc" stroke="#ddd3b8"/>
+<text x="589.1999999999999" y="330" font-size="17" fill="#2f2a1a" font-weight="500" text-anchor="middle" >No cloud</text>
+<circle cx="1010" cy="210" r="186" fill="#efe6cc"/>
+<circle cx="1010" cy="210" r="160" fill="none" stroke="#ddd3b8" stroke-width="2" opacity="1"/>
+<circle cx="1010" cy="210" r="106" fill="none" stroke="#ddd3b8" stroke-width="2" opacity="0.8"/>
+<circle cx="1010" cy="210" r="53" fill="none" stroke="#ddd3b8" stroke-width="2" opacity="0.6"/>
+<line x1="850" y1="210" x2="1170" y2="210" stroke="#ddd3b8" stroke-width="2"/>
+<line x1="1010" y1="50" x2="1010" y2="370" stroke="#ddd3b8" stroke-width="2"/>
+<line x1="1010" y1="210" x2="1138" y2="162" stroke="#d6962a" stroke-width="5" stroke-linecap="round"/>
+<circle cx="914" cy="101" r="10" fill="#cf5d4c" stroke="#f6f2e7" stroke-width="3"/>
+<text x="896" y="106" font-size="18" fill="#2f2a1a" font-weight="500" text-anchor="end" >Angry</text>
+<circle cx="1138" cy="162" r="26" fill="#d6962a" opacity=".22"/>
+<circle cx="1138" cy="162" r="13" fill="#d6962a" stroke="#f6f2e7" stroke-width="3"/>
+<text x="1156" y="167" font-size="18" fill="#2f2a1a" font-weight="600" text-anchor="start" >Happy</text>
+<circle cx="1010" cy="210" r="10" fill="#6f8a82" stroke="#f6f2e7" stroke-width="3"/>
+<text x="1010" y="240" font-size="18" fill="#2f2a1a" font-weight="500" text-anchor="middle" >Neutral</text>
+<circle cx="1042" cy="72" r="10" fill="#8466d2" stroke="#f6f2e7" stroke-width="3"/>
+<text x="1060" y="77" font-size="18" fill="#2f2a1a" font-weight="500" text-anchor="start" >Surprised</text>
+</svg>

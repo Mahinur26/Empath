@@ -63,7 +63,7 @@ def build_model(class_count=len(LABELS), arch="small"):
     # "small": one conv per block (the original ~58 KB model).
     # "wide": two convs in the first three blocks and more filters (~150 KB INT8). Uses the same
     # operator types (CONV_2D, MAX_POOL_2D, RESHAPE, FULLY_CONNECTED, SOFTMAX) so it runs on OpenMV
-    # and in web/empath-model.js unchanged.
+    # and in web/insideout-model.js unchanged.
     blocks = ((16, 1), (32, 1), (48, 1), (64, 1)) if arch == "small" else ((16, 2), (32, 2), (64, 2), (128, 1))
     for filters, repeats in blocks:
         for _ in range(repeats):
