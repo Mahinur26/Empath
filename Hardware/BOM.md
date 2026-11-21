@@ -1,8 +1,9 @@
 # Bill of Materials — Emotion-Detection Glasses
 
-Last updated: 2026-11-21
 
 Wiring reference: [Cirkit Designer schematic](https://app.cirkitdesigner.com/project/69ebc1e3-7c25-4586-92e4-6b42f8a82b8d)
+
+<img width="1364" height="926" alt="image" src="https://github.com/user-attachments/assets/f5827699-80cc-4ae7-b24c-a90063b3911a" />
 
 ---
 
