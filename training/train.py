@@ -140,6 +140,8 @@ def export_int8(model, images, rng):
         converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
         converter.inference_input_type = tf.int8
         converter.inference_output_type = tf.int8
+        # OpenMV firmware 5.0.1 rejects per-channel fully connected layers ("Failed to allocate tensors").
+        converter._experimental_disable_per_channel_quantization_for_dense_layers = True
         return converter.convert()
 
 

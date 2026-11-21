@@ -37,15 +37,18 @@ When no expression scores above 20%, it says **unsure** instead of guessing.
 ## 👓 Run it on the glasses
 
 > [!TIP]
-> Everything the glasses need is in [`openmv/`](openmv): the firmware [`main.py`](openmv/main.py), the OLED driver [`ssd1306.py`](openmv/ssd1306.py), and the recommended model folder [`plus_affect_surprise_dis/`](openmv/plus_affect_surprise_dis).
+> Everything the glasses need is in [`openmv/`](openmv): the firmware [`main.py`](openmv/main.py), which includes the OLED driver, and the recommended model folder [`plus_affect_surprise_dis/`](openmv/plus_affect_surprise_dis).
 
 1. **Connect.** Plug the Nicla Vision in with a USB data cable and click **Connect** in OpenMV IDE. Install the latest OpenMV firmware if prompted. See [Arduino's Nicla Vision setup guide](https://docs.arduino.cc/tutorials/nicla-vision/user-manual).
-2. **Copy the model.** Copy [`expression.tflite`](openmv/plus_affect_surprise_dis/expression.tflite) and [`labels.txt`](openmv/plus_affect_surprise_dis/labels.txt) to the root of the drive that appears for the board. Keep the two files together. Any other model folder in `openmv/` works the same way.
-3. **Run.** Open [`openmv/main.py`](openmv/main.py) and click **Run**. Center one face inside the square in the preview. The expression and its score appear over the preview and in the serial terminal.
-4. **Go standalone.** Save the script as `main.py` on the board's drive and copy [`ssd1306.py`](openmv/ssd1306.py) next to it. Then eject the drive and reset the board. With the OLED wired to J2 and the battery connected, the glasses start on power-up and update the display about twice per second. The OLED shows the logo's brows in the shape of the current reading next to the label and score. The glasses also run with no OLED attached.
+2. **Add the model to ROMFS.** In OpenMV IDE, open **Edit ROMFS**, click **Add File** for [`expression.tflite`](openmv/plus_affect_surprise_dis/expression.tflite) and [`labels.txt`](openmv/plus_affect_surprise_dis/labels.txt), and click **Commit ROMFS to OpenMV Cam**. Keep USB connected until the board restarts and the IDE reconnects. The board runs the model directly from flash instead of copying it into RAM. If ROMFS has no `expression.tflite`, the script reads both files from the root of the board's drive instead.
+3. **Run.** Open [`openmv/main.py`](openmv/main.py) and click **Run**. Center one face inside the square in the preview. The expression and its score appear over the preview, and the frame rate and reading appear in the serial terminal.
+4. **Go standalone.** Save the script as `main.py` on the board's drive; it's the only file the drive needs. Eject the drive in Finder or Explorer and wait for it to disappear before resetting or unplugging, or the board's drive can be corrupted. With the OLED wired to J2 and the battery connected, the glasses start on power-up. The OLED shows the logo's brows in the shape of the current reading next to the label, score and a confidence bar, and redraws when the reading changes. The glasses also run with no OLED attached.
 
 > [!NOTE]
-> The square is a fixed crop, so fill most of it with one front-facing face. The model always produces a score, even for an empty frame or an expression it wasn't trained on. It's about 166 KB, roughly six times the compute of the original model. **We haven't measured its frame rate or memory use on the board yet.**
+> The square is a fixed crop, so fill most of it with one front-facing face. The model always produces a score, even for an empty frame or an expression it wasn't trained on. It's about 166 KB, roughly six times the compute of the original model, and needs about 78 KB of RAM on the board.
+
+> [!IMPORTANT]
+> OpenMV firmware 5.0.1 only supports fully connected layers with a single weight scale, and stops other models with "Failed to allocate tensors". The recommended model has been converted with [`training/per_tensor_dense.py`](training/per_tensor_dense.py). Every other model in `openmv/` needs the same conversion before it loads on the board.
 
 <details>
 <summary><b>Firmware settings</b> in <code>openmv/main.py</code></summary>
@@ -75,6 +78,7 @@ py -m http.server 8000
 | 🧭 **Expression compass** | Shows the reading by pleasantness and energy, with neutral at the center |
 | 🔍 **"Why this reading?"** | Lists the facial cues for the expression, flags close calls, and shows an occlusion map of the face regions the model relied on |
 | 🔀 **Model switcher** | Switch between any trained model folder live |
+| 👓 **Connect Nicla** | In Chrome or Edge, shows the glasses' own camera over USB with their reading next to the page's. Run `main.py` on the board, disconnect OpenMV IDE (it holds the serial port), then press **Connect Nicla** and pick the Nicla. |
 
 ## 🧠 How it works
 
@@ -161,6 +165,7 @@ The models are trained in TensorFlow and exported as INT8 TFLite for OpenMV. The
 | [`evaluate.py`](training/evaluate.py) | Scores a model on held-out faces, with and without flip averaging |
 | [`mouth_test.py`](training/mouth_test.py) | Measures how much a model depends on the mouth |
 | [`tune_sensitivity.py`](training/tune_sensitivity.py) | Measures per-class sensitivity trade-offs |
+| [`per_tensor_dense.py`](training/per_tensor_dense.py) | Converts an exported model's fully connected layers to the single weight scale OpenMV firmware 5.0.1 requires. `train.py` already exports that way. |
 
 <details>
 <summary><b>Reproduce the original model</b></summary>
@@ -195,4 +200,4 @@ To redraw the README charts after retraining, run `py docs/make_figures.py`. To 
 ## 📄 Licenses and data
 
 - The `plus_affect*` models were trained partly on an unofficial copy of AffectNet, which is licensed for non-commercial research only. They're hackathon prototypes, and the images aren't in this repository.
-- The OLED driver is from [MicroPython Lib](https://github.com/micropython/micropython-lib/blob/a08087249fda8a7994f7c54ccaad29fb9fcc448a/micropython/drivers/display/ssd1306/ssd1306.py) and is distributed under the [MIT license](openmv/SSD1306-LICENSE.txt).
+- The OLED driver in `main.py` is adapted from [MicroPython Lib](https://github.com/micropython/micropython-lib/blob/a08087249fda8a7994f7c54ccaad29fb9fcc448a/micropython/drivers/display/ssd1306/ssd1306.py) and is distributed under the [MIT license](openmv/SSD1306-LICENSE.txt).
