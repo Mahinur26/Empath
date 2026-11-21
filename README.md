@@ -1,5 +1,10 @@
 <p align="center">
   <img src="docs/banner.svg" alt="Inside Out: glasses that read facial expressions on a microcontroller" width="100%">
+  
+
+https://github.com/user-attachments/assets/74b76174-1248-4e7e-8eb2-64d0df62491c
+
+
 </p>
 
 <p align="center">
