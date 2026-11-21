@@ -1,0 +1,37 @@
+{
+  "labels_in_model_order": [
+    "happy",
+    "neutral",
+    "sad"
+  ],
+  "test_images": 4254,
+  "accuracy": 0.731781852374236,
+  "recall_by_label": {
+    "happy": 0.8331454340473506,
+    "neutral": 0.6472019464720195,
+    "sad": 0.6712109061748196
+  },
+  "confusion_matrix_true_rows_predicted_columns": [
+    [
+      1478,
+      141,
+      155
+    ],
+    [
+      117,
+      798,
+      318
+    ],
+    [
+      96,
+      314,
+      837
+    ]
+  ],
+  "tflite_bytes": 57352,
+  "training_images": 15310,
+  "validation_images": 1700,
+  "epochs_run": 21,
+  "seed": 761,
+  "class_weighted": true
+}

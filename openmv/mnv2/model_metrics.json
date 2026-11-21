@@ -1,0 +1,83 @@
+{
+  "labels_in_model_order": [
+    "angry",
+    "happy",
+    "neutral",
+    "sad"
+  ],
+  "input_side": 96,
+  "test_images": 5212,
+  "accuracy": 0.5794320798158097,
+  "recall_by_label": {
+    "angry": 0.22338204592901878,
+    "happy": 0.6882750845546787,
+    "neutral": 0.8418491484184915,
+    "sad": 0.43865276663993585
+  },
+  "confusion_matrix_true_rows_predicted_columns": [
+    [
+      214,
+      120,
+      449,
+      175
+    ],
+    [
+      21,
+      1221,
+      406,
+      126
+    ],
+    [
+      12,
+      36,
+      1038,
+      147
+    ],
+    [
+      26,
+      69,
+      605,
+      547
+    ]
+  ],
+  "flip_average_accuracy": 0.5846124328472755,
+  "flip_average_recall_by_label": {
+    "angry": 0.23173277661795408,
+    "happy": 0.6888387824126269,
+    "neutral": 0.8450932684509327,
+    "sad": 0.4498797113071371
+  },
+  "flip_average_confusion_matrix": [
+    [
+      222,
+      117,
+      434,
+      185
+    ],
+    [
+      20,
+      1222,
+      411,
+      121
+    ],
+    [
+      10,
+      36,
+      1042,
+      145
+    ],
+    [
+      27,
+      56,
+      603,
+      561
+    ]
+  ],
+  "tflite_bytes": 623944,
+  "training_images": 18906,
+  "validation_images": 2099,
+  "head_epochs": 5,
+  "finetune_epochs_run": 30,
+  "seed": 761,
+  "architecture": "MobileNetV2 alpha 0.35 96x96"
+}
