@@ -78,6 +78,7 @@ py -m http.server 8000
 | 🧭 **Expression compass** | Shows the reading by pleasantness and energy, with neutral at the center |
 | 🔍 **"Why this reading?"** | Lists the facial cues for the expression, flags close calls, and shows an occlusion map of the face regions the model relied on |
 | 🔀 **Model switcher** | Switch between any trained model folder live |
+| 👓 **Connect Nicla** | In Chrome or Edge, shows the glasses' own camera over USB with their reading next to the page's. Run `main.py` on the board, disconnect OpenMV IDE (it holds the serial port), then press **Connect Nicla** and pick the Nicla. |
 
 ## 🧠 How it works
 
