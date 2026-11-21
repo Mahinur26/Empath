@@ -1,0 +1,103 @@
+{
+  "labels_in_model_order": [
+    "angry",
+    "happy",
+    "neutral",
+    "surprise"
+  ],
+  "test_images": 4890,
+  "accuracy": 0.8603271983640082,
+  "recall_by_label": {
+    "angry": 0.8189845474613686,
+    "happy": 0.900523560209424,
+    "neutral": 0.8319159579789895,
+    "surprise": 0.8692628650904033
+  },
+  "confusion_matrix_true_rows_predicted_columns": [
+    [
+      371,
+      24,
+      53,
+      5
+    ],
+    [
+      69,
+      1548,
+      74,
+      28
+    ],
+    [
+      142,
+      126,
+      1663,
+      68
+    ],
+    [
+      28,
+      20,
+      46,
+      625
+    ]
+  ],
+  "flip_average_accuracy": 0.874642126789366,
+  "flip_average_recall_by_label": {
+    "angry": 0.8300220750551877,
+    "happy": 0.9098312972658522,
+    "neutral": 0.8494247123561781,
+    "surprise": 0.8887343532684284
+  },
+  "flip_average_confusion_matrix": [
+    [
+      376,
+      19,
+      56,
+      2
+    ],
+    [
+      57,
+      1564,
+      75,
+      23
+    ],
+    [
+      127,
+      115,
+      1698,
+      59
+    ],
+    [
+      19,
+      17,
+      44,
+      639
+    ]
+  ],
+  "tflite_bytes": 166360,
+  "training_images": 29616,
+  "validation_images": 3288,
+  "epochs_run": 35,
+  "seed": 761,
+  "class_weighted": true,
+  "soft_labels": false,
+  "equalize": false,
+  "cutout": true,
+  "arch": "wide",
+  "augmented": true,
+  "training_data": "FER+ majority-vote train split + 13,941 AffectNet faces (Hugging Face Mauregato/affectnet_short, an unofficial copy). AffectNet is licensed for non-commercial research only; this model is a hackathon prototype.",
+  "note_test": "test_images/accuracy above are the FER+ test split; see affectnet_test for in-the-wild results",
+  "affectnet_test": {
+    "images": 3486,
+    "flip_accuracy": 0.824,
+    "flip_recall": {
+      "angry": 0.747,
+      "happy": 0.932,
+      "neutral": 0.87,
+      "surprise": 0.692
+    },
+    "with_angry_x1.5": {
+      "accuracy": 0.826,
+      "angry": 0.81,
+      "neutral_misread_as_angry": 0.04
+    }
+  }
+}

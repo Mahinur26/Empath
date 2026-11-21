@@ -17,8 +17,8 @@ LABELS_PATH = "/flash/labels.txt"
 MIN_SCORE = 0.60
 GUIDE_SIZE = 112
 # Everyday sad and angry are subtler than the mostly posed training photos, so their scores are weighted up
-# before picking the winner (the camera page's "Sad/angry sensitivity" slider). Labels not in labels.txt are ignored.
-SENSITIVITY = {"angry": 2.0, "sad": 2.0}
+# before picking the winner (the camera page's "Angry/sad sensitivity" slider). Labels not in labels.txt are ignored.
+SENSITIVITY = {"angry": 1.5, "sad": 2.0}
 
 
 def start_camera():

@@ -13,7 +13,7 @@ Outputs:
 AffectNet crops are looser than FER (eyes 27% of the width apart vs 40%), so each image is cropped about
 1.46x around the eyes to match FER's framing before it is shrunk to 48x48 grayscale.
 
-Usage: python training/build_affectnet.py ferplus.zip affect_src combined.zip affect_test.zip
+Usage: python training/build_affectnet.py ferplus.zip affect_src combined.zip affect_test.zip [labels]
 """
 
 import io
@@ -23,7 +23,8 @@ import zipfile
 import pandas as pd
 from PIL import Image
 
-AFFECT = {0: "angry", 3: "happy", 4: "neutral", 6: "sad"}
+ALL = {0: "angry", 1: "surprise", 3: "happy", 4: "neutral", 5: "fear", 6: "sad", 7: "disgust"}
+AFFECT = {k: v for k, v in ALL.items() if v in (sys.argv[5] if len(sys.argv) > 5 else "angry,happy,neutral,sad").split(",")}
 CROP = (15.1, 14.4, 80.8, 80.1)   # in 96x96 pixels: eyes land at FER's 37.5% height, 39.6% apart
 
 
