@@ -16,6 +16,9 @@ MODEL_PATH = "/flash/expression.tflite"
 LABELS_PATH = "/flash/labels.txt"
 MIN_SCORE = 0.60
 GUIDE_SIZE = 112
+# Everyday sad and angry are subtler than the mostly posed training photos, so their scores are weighted up
+# before picking the winner (the camera page's "Sad/angry sensitivity" slider). Labels not in labels.txt are ignored.
+SENSITIVITY = {"angry": 2.0, "sad": 2.0}
 
 
 def start_camera():
@@ -55,6 +58,7 @@ def main():
     if len(labels) < 2:
         raise ValueError("Copy the labels.txt supplied with the model to /flash")
 
+    weights = [SENSITIVITY.get(label, 1.0) for label in labels]
     model = ml.Model(MODEL_PATH)
     if model.input_shape != [(1, 48, 48, 1)] or model.output_shape != [(1, len(labels))]:
         raise ValueError("Use the supplied expression.tflite and labels.txt together")
@@ -73,6 +77,9 @@ def main():
             normalizer = Normalization(roi=roi)
 
         scores = model.predict([normalizer(frame)])[0].flatten()
+        weighted = [float(scores[i]) * weights[i] for i in range(len(labels))]
+        total = sum(weighted) or 1.0
+        scores = [value / total for value in weighted]
         best = max(range(len(labels)), key=lambda index: scores[index])
         score = float(scores[best])
         label = labels[best] if score >= MIN_SCORE else "unsure"

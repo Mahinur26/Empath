@@ -89,7 +89,8 @@ button,input,select{font:inherit}
     <div class="brand">Empath</div>
     <span class="status" id="status">Camera off</span>
     <select class="sel" id="modelSel" aria-label="Model">
-      <option value="../openmv/plus_cut/">Best · FER+ + cutout · reads brows and eyes, not just the mouth</option>
+      <option value="../openmv/plus_affect/">Best · FER+ + AffectNet + cutout · real-world faces</option>
+      <option value="../openmv/plus_cut/">FER+ + cutout · reads brows and eyes, not just the mouth</option>
       <option value="../openmv/plus_wide/">FER+ wide CNN · highest test score, mouth-heavy</option>
       <option value="../openmv/plus_eq/">FER+ lighting-normalised · for dim or backlit rooms</option>
       <option value="../openmv/plus_soft/">FER+ soft labels · steadier neutral, weaker sad</option>
@@ -99,6 +100,7 @@ button,input,select{font:inherit}
       <option value="../openmv/">4 classes, original</option>
     </select>
     <span class="chip" id="track" title="Face tracking crops tightly around your face, like the training images">Face tracking: loading…</span>
+    <label class="zoom" for="sens" title="Multiplies the sad and angry scores. Default model on held-out AffectNet faces: ×1 sad 62%, angry 64%, neutral misread 3% · ×2 sad 70%, angry 70%, neutral misread 7% · ×2.5 sad 72%, neutral misread 9%">Sad/angry sensitivity <input id="sens" type="range" min="10" max="30" value="20"><b id="sensV">×2.0</b></label>
     <label class="zoom" for="thr">Threshold <input id="thr" type="range" min="20" max="80" value="45"><b id="thrV">45%</b></label>    <label class="zoom" for="zoom">Crop <input id="zoom" type="range" min="35" max="93" value="60"></label>
     <button class="btn2" id="cal" type="button" disabled>Teach my face</button>
     <button class="btn" id="cam" type="button">Start camera</button>
@@ -141,6 +143,15 @@ const $ = id => document.getElementById(id);
 const TAU = Math.PI * 2;
 let MIN_SCORE = 0.45;   // below this the reading shows "Unsure"; the firmware's MIN_SCORE should match what works here
 document.getElementById('thr').addEventListener('input', e => { MIN_SCORE = e.target.value / 100; document.getElementById('thrV').textContent = e.target.value + '%'; });
+// Everyday sad and angry are subtler than FER's mostly posed photos, so the page can weight those two scores up.
+// Trade-off measured with training/tune_sensitivity.py on held-out FER+ faces (see the slider's tooltip).
+let SENS = 2.0;
+document.getElementById('sens').addEventListener('input', e => { SENS = e.target.value / 10; document.getElementById('sensV').textContent = '×' + SENS.toFixed(1); });
+const sensitize = raw => {
+  if (SENS === 1 || !M) return raw;
+  const out = raw.map((v, i) => (M.labels[i] === 'sad' || M.labels[i] === 'angry') ? v * SENS : v), s = out.reduce((a, b) => a + b, 0);
+  return out.map(v => v / s);
+};
 // Per-label presentation. Position is on the pleasant–unpleasant (x) / calm–activated (y) plane; neutral sits at the centre.
 const META = {
   angry: { name: 'Angry', low: 'angry', pos: [-.6, .68], hue: 8, col: '#cf5d4c', cues: ['Eyebrows lower and pull together', 'Eyes narrow or stare hard', 'Lips press together or tighten'], ctx: 'A lowered brow can also mean concentration or confusion, not only anger.' },
@@ -374,7 +385,7 @@ function infer() {
   const fa = M.model.predictWithFeatures(gray), fb = M.model.predictWithFeatures(mirrored);
   const raw = fa.scores.map((v, i) => (v + fb.scores[i]) / 2), feat = fa.features.map((v, i) => (v + fb.features[i]) / 2);
   lastMs = performance.now() - t0;
-  feedTeach(feat); probs = personalize(raw, feat);
+  feedTeach(feat); probs = personalize(sensitize(raw), feat);
   const top = argmax(probs);
   if (top === cand) run++; else { cand = top; run = 1; }
   if (run >= 3 || stable < 0) stable = top;
